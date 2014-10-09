@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" href="./Scripts/dist/themes/default/style.min.css" />
+    <script src="./Scripts/jquery-1.9.1.js"></script>
+    <script src="./Scripts/dist/jstree.js"></script>
+</head>
+<body>
+    <div id="jstree">
+        <ul>
+            <li>
+                Root node 1
+                <ul>
+                    <li id="child_node_1">Child node 1</li>
+                    <li>Child node 2</li>
+                </ul>
+            </li>
+            <li>Root node 2</li>
+        </ul>
+    </div>
+    <button>demo button</button>
+    <script>
+        $(function () {
+            // 6 create an instance when the DOM is ready
+            $('#jstree').jstree();
+            // 7 bind to events triggered on the tree
+            $('#jstree').on("changed.jstree", function (e, data) {
+                console.log(data.selected);
+            });
+            // 8 interact with the tree - either way is OK
+            $('button').on('click', function () {
+                $('#jstree').jstree(true).select_node('child_node_1');
+                console.log("I'm Jinfu");
+                //$('#jstree').jstree('select_node', 'child_node_1');
+                //$.jstree.reference('#jstree').select_node('child_node_1');
+            });
+        });
+    </script>
+</body>
+</html>

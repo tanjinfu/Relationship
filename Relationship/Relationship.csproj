@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{855C64AC-12E1-4EB3-A64C-856FE8AB2C28}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Relationship</RootNamespace>
+    <AssemblyName>Relationship</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.OData.Core, Version=6.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.OData.Core.6.4.0\lib\portable-net40+sl5+wp8+win8\Microsoft.OData.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm, Version=6.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.OData.Edm.6.4.0\lib\portable-net40+sl5+wp8+win8\Microsoft.OData.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Spatial.6.4.0\lib\portable-net40+sl5+wp8+win8\Microsoft.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.0\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.OData, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.OData.5.2.1\lib\net45\System.Web.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="index.html" />
+    <Content Include="Scripts\dist\jstree.js" />
+    <Content Include="Scripts\dist\jstree.min.js" />
+    <Content Include="Scripts\dist\libs\jquery.js" />
+    <Content Include="Scripts\dist\libs\require.js" />
+    <Content Include="Scripts\dist\themes\default\32px.png" />
+    <Content Include="Scripts\dist\themes\default\40px.png" />
+    <Content Include="Scripts\dist\themes\default\style.css" />
+    <Content Include="Scripts\dist\themes\default\style.min.css" />
+    <Content Include="Scripts\dist\themes\default\throbber.gif" />
+    <None Include="Scripts\jquery-1.8.3.intellisense.js" />
+    <Content Include="Scripts\jquery-1.8.3.js" />
+    <Content Include="Scripts\jquery-1.8.3.min.js" />
+    <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\jquery-treeview-1.0.1.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <Content Include="Scripts\knockout-3.1.0.debug.js" />
+    <Content Include="Scripts\knockout-3.1.0.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\.gitignore" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\asdf\New Text Document.txt" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\ajax_nodes.html" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\apple-touch-icon-precomposed.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\css\bootstrap-theme.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\css\bootstrap.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\css\bootstrap.min.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\js\bootstrap.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\js\bootstrap.min.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\jstree.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\jstree.min.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\libs\jquery.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\libs\jquery.ui.touch.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\libs\require.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\themes\default\32px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\themes\default\40px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\themes\default\style.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\themes\default\style.min.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\dist\themes\default\throbber.gif" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\docs.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\docs.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\favicon.ico" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\html5.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\images\browsers.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\images\find.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\images\logo.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\images\tree.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\images\tree_icon.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\jquery.address-1.6.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\respond.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\vakata.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\index.html" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\file_sprite.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\index.php" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\sitebrowser\class.db.php" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\sitebrowser\class.tree.php" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\sitebrowser\data.sql" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\sitebrowser\index.php" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\jstree.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\jstree.min.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\libs\jquery.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\libs\require.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\themes\default\32px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\themes\default\40px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\themes\default\style.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\themes\default\style.min.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\dist\themes\default\throbber.gif" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\ajax_nodes.html" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\apple-touch-icon-precomposed.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\css\bootstrap-theme.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\css\bootstrap.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\css\bootstrap.min.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\js\bootstrap.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\js\bootstrap.min.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\jstree.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\jstree.min.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\libs\jquery.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\libs\jquery.ui.touch.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\libs\require.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\themes\default\32px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\themes\default\40px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\themes\default\style.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\themes\default\style.min.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\dist\themes\default\throbber.gif" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\docs.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\docs.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\favicon.ico" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\html5.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\images\browsers.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\images\find.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\images\logo.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\images\tree.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\images\tree_icon.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\jquery.address-1.6.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\respond.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\vakata.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\index.html" />
+    <Content Include="Scripts\vakata-jstree-cc08849\gruntfile.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\libs\jquery.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\libs\require.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\intro.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.checkbox.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.contextmenu.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.dnd.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.search.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.sort.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.state.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.types.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.unique.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\jstree.wholerow.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\misc.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\outro.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\sample.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\themes\default\32px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\themes\default\40px.png" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\themes\default\style.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\themes\default\throbber.gif" />
+    <Content Include="Scripts\vakata-jstree-cc08849\test\index.html" />
+    <Content Include="Scripts\vakata-jstree-cc08849\test\libs\qunit.css" />
+    <Content Include="Scripts\vakata-jstree-cc08849\test\libs\qunit.js" />
+    <Content Include="Scripts\vakata-jstree-cc08849\test\test.js" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Account.cs">
+      <DependentUpon>Relation.tt</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\PeopleController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Person.cs" />
+    <Compile Include="Person.cs">
+      <DependentUpon>Relation.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Relation.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Relation.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Relation.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Relation.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Relation.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Relation.edmx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <EntityDeploy Include="Relation.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Relation.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Relation.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Relation.edmx</DependentUpon>
+      <LastGenOutput>Relation.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Relation.edmx.diagram">
+      <DependentUpon>Relation.edmx</DependentUpon>
+    </Content>
+    <Content Include="Relation.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Relation.edmx</DependentUpon>
+      <LastGenOutput>Relation.cs</LastGenOutput>
+    </Content>
+    <Content Include="Scripts\vakata-jstree-cc08849\bower.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\component.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\composer.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\.htaccess" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\asdf\ajax_children.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\asdf\ajax_children2.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\asdf\asdf asdf" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\asdf\asdfasdf" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\asdf\asdfasdfasdfasdfasdf" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\asdf\New file4" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\ajax_children.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\ajax_demo_children.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\ajax_demo_roots.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\ajax_roots.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\images\ajax_children2.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\assets\images\New file4" />
+    <Content Include="Scripts\vakata-jstree-cc08849\demo\filebrowser\data\root\jstree.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\ajax_children.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\ajax_demo_children.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\ajax_demo_roots.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\ajax_roots.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\assets\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\vakata-jstree-cc08849\docs\jstree.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\jstree.jquery.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\LICENSE-MIT" />
+    <Content Include="Scripts\vakata-jstree-cc08849\package.json" />
+    <Content Include="Scripts\vakata-jstree-cc08849\README.md" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\themes\default\base.less" />
+    <Content Include="Scripts\vakata-jstree-cc08849\src\themes\default\style.less" />
+    <Content Include="Scripts\vakata-jstree-cc08849\test\UNDER_CONTRUCTION" />
+    <Content Include="Scripts\jquery-1.9.1.min.map" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>25432</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:25432/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
