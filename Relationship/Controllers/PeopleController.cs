@@ -191,6 +191,13 @@ namespace Relationship.Controllers
             return SingleResult.Create(db.People.Where(m => m.Id == key).Select(m => m.Mother));
         }
 
+        [ODataRoute("GetRootPersons()")]
+        public IHttpActionResult GetRootPersons()
+        {
+            IQueryable<Person> rootPersons =db.People.Where(p => p.FatherId == null);
+            return Ok(rootPersons);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

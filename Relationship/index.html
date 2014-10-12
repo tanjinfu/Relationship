@@ -2,40 +2,44 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
-    <link rel="stylesheet" href="./Scripts/dist/themes/default/style.min.css" />
+    <link rel="stylesheet" href="./Scripts/zTree_v3/css/zTreeStyle/zTreeStyle.css" />
     <script src="./Scripts/jquery-1.9.1.js"></script>
-    <script src="./Scripts/dist/jstree.js"></script>
+    <script type="text/javascript" src="./Scripts/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
+    <script language="JavaScript">
+        <!--
+		var setting = {
+		    async: {
+		        enable: true,
+		        url: getAsyncUrl,
+		        autoParam: ["id", "name=n", "level=lv"],
+                type:"get",
+		        dataFilter: filter
+		    }
+		};
+
+		function filter(treeId, parentNode, responseData) {
+		    if (!responseData) return null;
+            for (var i=0, l=responseData.value.length; i<l; i++) {
+                responseData.value[i].name = responseData.value[i].LastName + responseData.value[i].FirstName;
+                if (responseData.value[i].Gender==1) {
+                    responseData.value[i].isParent = true;
+                }
+            }
+            return responseData.value;
+        }
+		function getAsyncUrl(treeId, treeNode) {
+		    var url = treeNode == undefined ? "/odata/GetRootPersons()" : "/odata/People(" + treeNode.Id + ")/ChildrenByFather";
+		    return url;
+		};
+        $(document).ready(function(){
+            $.fn.zTree.init($("#treeDemo"), setting);
+        });
+        //-->
+    </script>
 </head>
 <body>
-    <div id="jstree">
-        <ul>
-            <li>
-                Root node 1
-                <ul>
-                    <li id="child_node_1">Child node 1</li>
-                    <li>Child node 2</li>
-                </ul>
-            </li>
-            <li>Root node 2</li>
-        </ul>
+    <div>
+        <ul id="treeDemo" class="ztree"></ul>
     </div>
-    <button>demo button</button>
-    <script>
-        $(function () {
-            // 6 create an instance when the DOM is ready
-            $('#jstree').jstree();
-            // 7 bind to events triggered on the tree
-            $('#jstree').on("changed.jstree", function (e, data) {
-                console.log(data.selected);
-            });
-            // 8 interact with the tree - either way is OK
-            $('button').on('click', function () {
-                $('#jstree').jstree(true).select_node('child_node_1');
-                console.log("I'm Jinfu");
-                //$('#jstree').jstree('select_node', 'child_node_1');
-                //$.jstree.reference('#jstree').select_node('child_node_1');
-            });
-        });
-    </script>
 </body>
 </html>

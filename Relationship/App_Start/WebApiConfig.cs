@@ -11,6 +11,7 @@ namespace Relationship
         {
             // Web API configuration and services
             config.MapODataServiceRoute("OData", "odata", getEdmModel());
+            config.EnsureInitialized();
         }
 
         private static IEdmModel getEdmModel()
@@ -26,6 +27,9 @@ namespace Relationship
             EntityTypeConfiguration<Account> accountType = accountEntitySet.EntityType;
             accountType.Ignore(a => a.LastModifyTime);
             accountType.Ignore(a => a.CreateTime);
+
+            FunctionConfiguration function=modelBuilder.Function("GetRootPersons");
+            function.ReturnsCollectionFromEntitySet<Person>("People");
 
             modelBuilder.Namespace = typeof(Person).Namespace;
             return modelBuilder.GetEdmModel();
