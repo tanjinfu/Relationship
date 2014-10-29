@@ -15,14 +15,13 @@ namespace Relationship
     public partial class Account
     {
         public long Id { get; set; }
-        public long PersonId { get; set; }
-        public string DisplayName { get; set; }
+        public string LoginName { get; set; }
         public string Pword { get; set; }
+        public Nullable<byte> Gender { get; set; }
+        public string Address { get; set; }
         public string Email { get; set; }
         public Nullable<byte> IsAdmin { get; set; }
         public Nullable<System.DateTime> LastModifyTime { get; set; }
         public Nullable<System.DateTime> CreateTime { get; set; }
-    
-        public virtual Person Person { get; set; }
     }
 }

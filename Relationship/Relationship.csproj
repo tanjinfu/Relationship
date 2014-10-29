@@ -99,9 +99,30 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <EntityDeploy Include="Model_2014-10-28.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Model_2014-10-28.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Model_2014-10-28.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Model_2014-10-28.edmx</DependentUpon>
+      <LastGenOutput>Model_2014-10-28.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Model_2014-10-28.edmx.diagram">
+      <DependentUpon>Model_2014-10-28.edmx</DependentUpon>
+    </Content>
+    <Content Include="Model_2014-10-28.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Model_2014-10-28.edmx</DependentUpon>
+      <LastGenOutput>Model_2014-10-28.cs</LastGenOutput>
+    </Content>
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="LearnKnockout.html" />
     <Content Include="Scripts\jquery-1.9.1.js" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\knockout-3.2.0.debug.js" />
+    <Content Include="Scripts\knockout-3.2.0.js" />
+    <Content Include="Scripts\relationship.js" />
     <Content Include="Scripts\zTree_v3\.gitattributes" />
     <Content Include="Scripts\zTree_v3\.gitignore" />
     <Content Include="Scripts\zTree_v3\api\apiCss\api.js" />
@@ -596,11 +617,13 @@
     <Content Include="Scripts\zTree_v3\js\jquery.ztree.exhide-3.5.min.js" />
     <Content Include="Scripts\zTree_v3\log v3.x.txt" />
     <Content Include="Scripts\zTree_v3\QUI 框架介绍.txt" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs">
-      <DependentUpon>Relation.tt</DependentUpon>
+      <DependentUpon>Model_2014-10-28.tt</DependentUpon>
     </Compile>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\PeopleController.cs" />
@@ -608,45 +631,28 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Person.cs" />
+    <Compile Include="Model_2014-10-28.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model_2014-10-28.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model_2014-10-28.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model_2014-10-28.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model_2014-10-28.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model_2014-10-28.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Person.cs">
-      <DependentUpon>Relation.tt</DependentUpon>
+      <DependentUpon>Model_2014-10-28.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Relation.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Relation.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Relation.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Relation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Relation.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Relation.edmx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <EntityDeploy Include="Relation.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Relation.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Relation.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Relation.edmx</DependentUpon>
-      <LastGenOutput>Relation.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Relation.edmx.diagram">
-      <DependentUpon>Relation.edmx</DependentUpon>
-    </Content>
-    <Content Include="Relation.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Relation.edmx</DependentUpon>
-      <LastGenOutput>Relation.cs</LastGenOutput>
-    </Content>
     <Content Include="Scripts\jquery-1.9.1.min.map" />
     <Content Include="Scripts\zTree_v3\README.md" />
     <Content Include="Scripts\zTree_v3\zTree.v3.jquery.json" />

@@ -13,10 +13,10 @@ namespace Relationship
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class RelationEntities1 : DbContext
+    public partial class relationshipEntities_20141028 : DbContext
     {
-        public RelationEntities1()
-            : base("name=RelationEntities1")
+        public relationshipEntities_20141028()
+            : base("name=relationshipEntities_20141028")
         {
         }
     
@@ -25,7 +25,7 @@ namespace Relationship
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<Person> People { get; set; }
+        public virtual DbSet<Account> Account { get; set; }
+        public virtual DbSet<Person> Person { get; set; }
     }
 }

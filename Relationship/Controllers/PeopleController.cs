@@ -26,20 +26,20 @@ namespace Relationship.Controllers
     */
     public class PeopleController : ODataController
     {
-        private RelationEntities1 db = new RelationEntities1();
+        private relationshipEntities_20141028 db = new relationshipEntities_20141028();
 
         // GET odata/People
         [EnableQuery]
         public IQueryable<Person> GetPeople()
         {
-            return db.People;
+            return db.Person;
         }
 
         // GET odata/People(5)
         [EnableQuery]
-        public SingleResult<Person> GetPerson([FromODataUri] long key)
+        public SingleResult<Person> Get([FromODataUri] long key)
         {
-            return SingleResult.Create(db.People.Where(person => person.Id == key));
+            return SingleResult.Create(db.Person.Where(person => person.Id == key));
         }
 
         // PUT odata/People(5)
@@ -84,7 +84,7 @@ namespace Relationship.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.People.Add(person);
+            db.Person.Add(person);
 
             try
             {
@@ -114,7 +114,7 @@ namespace Relationship.Controllers
                 return BadRequest(ModelState);
             }
 
-            Person person = db.People.Find(key);
+            Person person = db.Person.Find(key);
             if (person == null)
             {
                 return NotFound();
@@ -144,57 +144,57 @@ namespace Relationship.Controllers
         // DELETE odata/People(5)
         public IHttpActionResult Delete([FromODataUri] long key)
         {
-            Person person = db.People.Find(key);
+            Person person = db.Person.Find(key);
             if (person == null)
             {
                 return NotFound();
             }
 
-            db.People.Remove(person);
+            db.Person.Remove(person);
             db.SaveChanges();
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // GET odata/People(5)/Accounts
-        [EnableQuery]
-        public IQueryable<Account> GetAccounts([FromODataUri] long key)
-        {
-            return db.People.Where(m => m.Id == key).SelectMany(m => m.Accounts);
-        }
+        //[EnableQuery]
+        //public IQueryable<Account> GetAccounts([FromODataUri] long key)
+        //{
+        //    return db.Person.Where(m => m.Id == key).SelectMany(m => m.Accounts);
+        //}
 
         // GET odata/People(5)/ChildrenByFather
         [EnableQuery]
         public IQueryable<Person> GetChildrenByFather([FromODataUri] long key)
         {
-            return db.People.Where(m => m.Id == key).SelectMany(m => m.ChildrenByFather);
+            return db.Person.Where(m => m.Id == key).SelectMany(m => m.ChildrenByFather);
         }
 
         // GET odata/People(5)/Father
         [EnableQuery]
         public SingleResult<Person> GetFather([FromODataUri] long key)
         {
-            return SingleResult.Create(db.People.Where(m => m.Id == key).Select(m => m.Father));
+            return SingleResult.Create(db.Person.Where(m => m.Id == key).Select(m => m.Father));
         }
 
         // GET odata/People(5)/ChildernByMother
         [EnableQuery]
         public IQueryable<Person> GetChildernByMother([FromODataUri] long key)
         {
-            return db.People.Where(m => m.Id == key).SelectMany(m => m.ChildernByMother);
+            return db.Person.Where(m => m.Id == key).SelectMany(m => m.ChildrenByMother);
         }
 
         // GET odata/People(5)/Mother
         [EnableQuery]
         public SingleResult<Person> GetMother([FromODataUri] long key)
         {
-            return SingleResult.Create(db.People.Where(m => m.Id == key).Select(m => m.Mother));
+            return SingleResult.Create(db.Person.Where(m => m.Id == key).Select(m => m.Mother));
         }
 
         [ODataRoute("GetRootPersons()")]
         public IHttpActionResult GetRootPersons()
         {
-            IQueryable<Person> rootPersons =db.People.Where(p => p.FatherId == null);
+            IQueryable<Person> rootPersons =db.Person.Where(p => p.FatherId == null);
             return Ok(rootPersons);
         }
 
@@ -209,7 +209,7 @@ namespace Relationship.Controllers
 
         private bool PersonExists(long key)
         {
-            return db.People.Count(e => e.Id == key) > 0;
+            return db.Person.Count(e => e.Id == key) > 0;
         }
     }
 }

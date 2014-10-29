@@ -3,43 +3,93 @@
 <head>
     <title></title>
     <link rel="stylesheet" href="./Scripts/zTree_v3/css/zTreeStyle/zTreeStyle.css" />
-    <script src="./Scripts/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="./Scripts/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="./Scripts/knockout-3.2.0.debug.js"></script>
+    <script type="text/javascript" src="./Scripts/relationship.js"></script>
     <script language="JavaScript">
-        <!--
-		var setting = {
-		    async: {
-		        enable: true,
-		        url: getAsyncUrl,
-		        autoParam: ["id", "name=n", "level=lv"],
-                type:"get",
-		        dataFilter: filter
-		    }
-		};
 
-		function filter(treeId, parentNode, responseData) {
-		    if (!responseData) return null;
-            for (var i=0, l=responseData.value.length; i<l; i++) {
+    </script>
+</head>
+<body>
+    <div>
+        <p data-bind="visible: errorMessage">Error: <span data-bind="text: errorMessage"></span></p>
+    </div>
+    <table style="vertical-align:top;align-self:center;width:800px;border:1px">
+        <tr>
+            <td style="width:200px;height:400px;"><ul id="treeDemo" class="ztree"></ul></td>
+            <td style="width:100%">
+                <table style="width:100%">
+                    <tr>
+                        <td>姓</td>
+                        <td data-bind="text: lastName()"></td>
+                        <td>名</td>
+                        <td data-bind="text: firstName()"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <script>
+        var genders = [
+    { value: '1', description: '男' },
+    { value: '0', description: '女' },
+        ];
+        var defaultPerson = { firstName: '', lastName: '', description: '', fatherId: 0, motherId: 0 };
+
+        var viewModel = {
+            firstName: ko.observable(defaultPerson.firstName),
+            lastName: ko.observable(defaultPerson.lastName),
+            description: ko.observable(defaultPerson.description),
+            fatherId: ko.observable(defaultPerson.fatherId),
+            motherId: ko.observable(defaultPerson.motherId),
+            errorMessage: ko.observable(),
+        };
+
+        ko.applyBindings(viewModel); // Makes Knockout get to work
+
+        function displayPerson(result) {
+            viewModel.firstName(result.FirstName);
+            viewModel.lastName(result.LastName);
+        }
+
+        function zTreeOnClick(event, treeId, treeNode) {
+            viewModel.errorMessage(null); // clear error message
+            $.get("odata/People(" + treeNode.Id + ")", null, displayPerson, "json");
+        };
+
+        var setting = {
+            async: {
+                enable: true,
+                url: getAsyncUrl,
+                autoParam: ["id", "name=n", "level=lv"],
+                type: "get",
+                dataFilter: filter
+            },
+            callback: {
+                onClick: zTreeOnClick
+            }
+        };
+
+        function filter(treeId, parentNode, responseData) {
+            if (!responseData) return null;
+            for (var i = 0, l = responseData.value.length; i < l; i++) {
                 responseData.value[i].name = responseData.value[i].LastName + responseData.value[i].FirstName;
-                if (responseData.value[i].Gender==1) {
+                if (responseData.value[i].Gender == 1) {
                     responseData.value[i].isParent = true;
                 }
             }
             return responseData.value;
         }
-		function getAsyncUrl(treeId, treeNode) {
-		    var url = treeNode == undefined ? "/odata/GetRootPersons()" : "/odata/People(" + treeNode.Id + ")/ChildrenByFather";
-		    return url;
-		};
-        $(document).ready(function(){
+
+        function getAsyncUrl(treeId, treeNode) {
+            var url = treeNode == undefined ? "/odata/GetRootPersons()" : "/odata/People(" + treeNode.Id + ")/ChildrenByFather";
+            return url;
+        };
+
+        $(document).ready(function () {
             $.fn.zTree.init($("#treeDemo"), setting);
         });
-        //-->
     </script>
-</head>
-<body>
-    <div>
-        <ul id="treeDemo" class="ztree"></ul>
-    </div>
 </body>
 </html>

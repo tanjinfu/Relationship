@@ -16,15 +16,14 @@ namespace Relationship
     {
         public Person()
         {
-            this.Accounts = new HashSet<Account>();
             this.ChildrenByFather = new HashSet<Person>();
-            this.ChildernByMother = new HashSet<Person>();
+            this.ChildrenByMother = new HashSet<Person>();
         }
     
         public long Id { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
-        public Nullable<byte> Gender { get; set; }
+        public byte Gender { get; set; }
         public Nullable<long> FatherId { get; set; }
         public Nullable<long> MotherId { get; set; }
         public string BirthDay { get; set; }
@@ -32,15 +31,14 @@ namespace Relationship
         public string DeathDay { get; set; }
         public string DeathTime { get; set; }
         public string Remark { get; set; }
-        public Nullable<long> InsertedBy { get; set; }
-        public Nullable<System.DateTime> InsertedTime { get; set; }
-        public Nullable<long> UpdatedBy { get; set; }
-        public Nullable<System.DateTime> UpdatedTime { get; set; }
+        public long InsertedBy { get; set; }
+        public System.DateTime InsertedTime { get; set; }
+        public long UpdatedBy { get; set; }
+        public System.DateTime UpdatedTime { get; set; }
     
-        public virtual ICollection<Account> Accounts { get; set; }
         public virtual ICollection<Person> ChildrenByFather { get; set; }
         public virtual Person Father { get; set; }
-        public virtual ICollection<Person> ChildernByMother { get; set; }
+        public virtual ICollection<Person> ChildrenByMother { get; set; }
         public virtual Person Mother { get; set; }
     }
 }
