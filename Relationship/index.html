@@ -15,9 +15,12 @@
     <div>
         <p data-bind="visible: errorMessage">Error: <span data-bind="text: errorMessage"></span></p>
     </div>
-    <table style="vertical-align:top;align-self:center;width:800px;border:1px">
+    <table style="vertical-align:top;align-self:center;width:1000px;border:1px">
         <tr>
-            <td style="width:200px;height:400px;"><ul id="treeDemo" class="ztree"></ul></td>
+            <td style="width:40%;height:600px;">
+                <ul id="treeDemo" class="ztree"></ul>
+            </td>
+            <td style="width:1%;background-color:gray"></td>
             <td style="width:100%">
                 <table style="width:100%">
                     <tr>
@@ -25,6 +28,42 @@
                         <td data-bind="text: lastName()"></td>
                         <td>名</td>
                         <td data-bind="text: firstName()"></td>
+                        <td>性别</td>
+                        <td data-bind="text: formattedGender()"></td>
+                        <td>排行</td>
+                        <td data-bind="text: orderInChildrenOfParents()"></td>
+                    </tr>
+                    <tr>
+                        <td>出生日期</td>
+                        <td data-bind="text: formattedBirthDay()"></td>
+                        <td>时间</td>
+                        <td data-bind="text: birthTime()"></td>
+                        <td>逝世日期</td>
+                        <td data-bind="text: formattedDeathDay()"></td>
+                        <td>时间</td>
+                        <td data-bind="text: deathTime()"></td>
+                    </tr>
+                    <tr>
+                        <td>父亲</td>
+                        <td><span data-bind="text:fatherLastName()"></span><span data-bind="text:fatherFirstName()"></span></td>
+                        <td>母亲</td>
+                        <td><span data-bind="text:motherLastName()"></span><span data-bind="text:motherFirstName()"></span></td>
+                        <td></td>
+                        <td data-bind="text: formattedDeathDay()"></td>
+                        <td></td>
+                        <td data-bind="text: deathTime()"></td>
+                    </tr>
+                    <tr>
+                        <td>子女</td>
+                        <td colspan="7">
+                            <span data-bind="foreach: childrenByFather">
+                                <span data-bind="text: LastName"></span><span data-bind="text: FirstName"></span>,
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td colspan="7" data-bind="text: remark()"></td>
                     </tr>
                 </table>
             </td>
@@ -35,27 +74,81 @@
     { value: '1', description: '男' },
     { value: '0', description: '女' },
         ];
-        var defaultPerson = { firstName: '', lastName: '', description: '', fatherId: 0, motherId: 0 };
-
-        var viewModel = {
-            firstName: ko.observable(defaultPerson.firstName),
-            lastName: ko.observable(defaultPerson.lastName),
-            description: ko.observable(defaultPerson.description),
-            fatherId: ko.observable(defaultPerson.fatherId),
-            motherId: ko.observable(defaultPerson.motherId),
-            errorMessage: ko.observable(),
+        var defaultPerson = {
+            birthDay: '',
+            birthTime: '',
+            deathDay: '',
+            deathTime: '',
+            fatherId: 0,
+            id: 0,
+            firstName: '',
+            lastName: '',
+            remark: '',
+            motherId: 0,
+            gender: 1,
+            order: 1
         };
 
+        var viewModel = {
+            // person info
+            id: ko.observable(defaultPerson.id),
+            birthDay: ko.observable(defaultPerson.birthDay),
+            birthTime: ko.observable(defaultPerson.birthTime),
+            childrenByFather: ko.observableArray(),
+            deathDay: ko.observable(defaultPerson.deathDay),
+            deathTime: ko.observable(defaultPerson.deathTime),
+            fatherFirstName: ko.observable(),
+            fatherId: ko.observable(defaultPerson.fatherId),
+            fatherLastName: ko.observable(),
+            firstName: ko.observable(defaultPerson.firstName),
+            gender: ko.observable(defaultPerson.gender),
+            lastName: ko.observable(defaultPerson.lastName),
+            motherFirstName: ko.observable(),
+            motherId: ko.observable(defaultPerson.motherId),
+            motherLastName: ko.observable(),
+            orderInChildrenOfParents: ko.observable(defaultPerson.orderInChildrenOfParents),
+            remark: ko.observable(defaultPerson.remark),
+            //
+            errorMessage: ko.observable(),
+        };
+        viewModel.formattedGender = ko.dependentObservable(function () {
+            return this.gender() == 1 ? "男" : "女";
+        }, viewModel);
+        viewModel.formattedBirthDay = ko.dependentObservable(function () {
+            return this.birthDay().indexOf("1:") >= 0 ? this.birthDay().replace("1:", "") : this.birthDay().replace("0:", "公元前 ");
+        }, viewModel);
+        viewModel.formattedDeathDay = ko.dependentObservable(function () {
+            return this.deathDay().indexOf("1:") >= 0 ? this.deathDay().replace("1:", "") : this.deathDay().replace("0:", "公元前 ");
+        }, viewModel);
         ko.applyBindings(viewModel); // Makes Knockout get to work
 
-        function displayPerson(result) {
+        function updateViewModelOfPerson(result) {
+            viewModel.id(result.Id);
+            viewModel.birthDay(result.BirthDay);
+            viewModel.birthTime(result.BirthTime);
+            viewModel.deathDay(result.DeathDay);
+            viewModel.deathTime(result.DeathTime);
+            if (result.Father != null) {
+                viewModel.fatherFirstName(result.Father.FirstName);
+                viewModel.fatherLastName(result.Father.LastName);
+            }
+            viewModel.fatherId(result.FatherId);
+            if (result.Mother != null) {
+                viewModel.motherFirstName(result.Mother.FirstName);
+                viewModel.motherLastName(result.Mother.LastName);
+            }
+            viewModel.motherId(result.MotherId),
+            viewModel.gender(result.Gender),
+            viewModel.orderInChildrenOfParents(result.OrderInChildrenOfParents),
+            viewModel.remark(result.Remark),
             viewModel.firstName(result.FirstName);
             viewModel.lastName(result.LastName);
+            viewModel.childrenByFather(result.ChildrenByFather)
         }
 
         function zTreeOnClick(event, treeId, treeNode) {
             viewModel.errorMessage(null); // clear error message
-            $.get("odata/People(" + treeNode.Id + ")", null, displayPerson, "json");
+            $.get("odata/People(" + treeNode.Id + ")?$expand=Mother($select=Id,FirstName,LastName),Father($select=Id,FirstName,LastName),ChildrenByFather($select=Id,FirstName,LastName)", null, updateViewModelOfPerson, "json");
         };
 
         var setting = {
