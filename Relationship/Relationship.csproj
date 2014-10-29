@@ -123,8 +123,6 @@
     <Content Include="Scripts\knockout-3.2.0.debug.js" />
     <Content Include="Scripts\knockout-3.2.0.js" />
     <Content Include="Scripts\relationship.js" />
-    <Content Include="Scripts\zTree_v3\.gitattributes" />
-    <Content Include="Scripts\zTree_v3\.gitignore" />
     <Content Include="Scripts\zTree_v3\api\apiCss\api.js" />
     <Content Include="Scripts\zTree_v3\api\apiCss\common.css" />
     <Content Include="Scripts\zTree_v3\api\apiCss\common_ie6.css" />
