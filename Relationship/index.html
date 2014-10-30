@@ -7,9 +7,6 @@
     <script type="text/javascript" src="./Scripts/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
     <script type="text/javascript" src="./Scripts/knockout-3.2.0.debug.js"></script>
     <script type="text/javascript" src="./Scripts/relationship.js"></script>
-    <script language="JavaScript">
-
-    </script>
 </head>
 <body>
     <div>
@@ -25,131 +22,151 @@
                 <table style="width:100%">
                     <tr>
                         <td>姓</td>
-                        <td data-bind="text: lastName()"></td>
+                        <td data-bind="text: viewPerson().lastName()"></td>
                         <td>名</td>
-                        <td data-bind="text: firstName()"></td>
+                        <td data-bind="text: viewPerson().firstName()"></td>
                         <td>性别</td>
-                        <td data-bind="text: formattedGender()"></td>
+                        <td data-bind="text: viewPerson().formattedGender()"></td>
                         <td>排行</td>
-                        <td data-bind="text: orderInChildrenOfParents()"></td>
+                        <td data-bind="text: viewPerson().orderInChildrenOfParents()"></td>
                     </tr>
                     <tr>
                         <td>出生日期</td>
-                        <td data-bind="text: formattedBirthDay()"></td>
+                        <td data-bind="text: viewPerson().formattedBirthDay()"></td>
                         <td>时间</td>
-                        <td data-bind="text: birthTime()"></td>
+                        <td data-bind="text: viewPerson().birthTime()"></td>
                         <td>逝世日期</td>
-                        <td data-bind="text: formattedDeathDay()"></td>
+                        <td data-bind="text: viewPerson().formattedDeathDay()"></td>
                         <td>时间</td>
-                        <td data-bind="text: deathTime()"></td>
+                        <td data-bind="text: viewPerson().deathTime()"></td>
                     </tr>
                     <tr>
                         <td>父亲</td>
-                        <td><span data-bind="text:fatherLastName()"></span><span data-bind="text:fatherFirstName()"></span></td>
+                        <td><span data-bind="text:viewPerson().fatherLastName()"></span><span data-bind="text:viewPerson().fatherFirstName()"></span></td>
                         <td>母亲</td>
-                        <td><span data-bind="text:motherLastName()"></span><span data-bind="text:motherFirstName()"></span></td>
+                        <td><span data-bind="text:viewPerson().motherLastName()"></span><span data-bind="text:viewPerson().motherFirstName()"></span></td>
                         <td></td>
-                        <td data-bind="text: formattedDeathDay()"></td>
+                        <td data-bind="text: viewPerson().formattedDeathDay()"></td>
                         <td></td>
-                        <td data-bind="text: deathTime()"></td>
+                        <td data-bind="text: viewPerson().deathTime()"></td>
                     </tr>
                     <tr>
                         <td>子女</td>
                         <td colspan="7">
-                            <span data-bind="foreach: childrenByFather">
-                                <span data-bind="text: LastName"></span><span data-bind="text: FirstName"></span>,
+                            <span data-bind="foreach: viewPerson().childrenByFather()">
+                                <span data-bind="text: lastName"></span><span data-bind="text: firstName"></span>,
+                            </span>
+                            <span data-bind="foreach: viewPerson().childrenByMother()">
+                                <span data-bind="text: lastName"></span><span data-bind="text: firstName"></span>,
                             </span>
                         </td>
                     </tr>
                     <tr>
                         <td>备注</td>
-                        <td colspan="7" data-bind="text: remark()"></td>
+                        <td colspan="7" data-bind="text: viewPerson().remark()"></td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
     <script>
-        var genders = [
-    { value: '1', description: '男' },
-    { value: '0', description: '女' },
-        ];
-        var defaultPerson = {
-            birthDay: '',
-            birthTime: '',
-            deathDay: '',
-            deathTime: '',
-            fatherId: 0,
-            id: 0,
-            firstName: '',
-            lastName: '',
-            remark: '',
-            motherId: 0,
-            gender: 1,
-            order: 1
+        function ClientPerson(serverPerson) {
+            var self = this;
+            self.birthDay = ko.observable();
+            self.birthTime = ko.observable();
+            self.childrenByFather = ko.observableArray();
+            self.childrenByMother = ko.observableArray();
+            self.deathDay = ko.observable();
+            self.deathTime = ko.observable();
+            self.fatherFirstName = ko.observable();
+            self.fatherId = ko.observable();
+            self.fatherLastName = ko.observable();
+            self.firstName = ko.observable();
+            self.gender = ko.observable();
+            self.id = ko.observable();
+            self.lastName = ko.observable();
+            self.motherFirstName = ko.observable();
+            self.motherId = ko.observable();
+            self.motherLastName = ko.observable();
+            self.orderInChildrenOfParents = ko.observable();
+            self.remark = ko.observable();
+
+            self.formattedGender = ko.dependentObservable(function () {
+                return self.gender() == 1 ? "男" : "女";
+            }.bind(self));
+            self.formattedBirthDay = ko.dependentObservable(function () {
+                return self.birthDay() ? self.birthDay().replace("1:", "").replace("0:", "公元前 ") : "";
+            }.bind(self));
+            self.formattedDeathDay = ko.dependentObservable(function () {
+                return self.deathDay() ? self.deathDay().replace("1:", "").replace("0:", "公元前 ") : "";
+            }.bind(self));
+
+            updateClientPerson(serverPerson);
+
+            function updateClientPerson(serverPerson) {
+                self.birthDay(serverPerson.BirthDay);
+                self.birthTime(serverPerson.BirthTime);
+                self.deathDay(serverPerson.DeathDay);
+                self.deathTime(serverPerson.DeathTime);
+                if (serverPerson.Father != null) {
+                    self.fatherFirstName(serverPerson.Father.FirstName);
+                    self.fatherLastName(serverPerson.Father.LastName);
+                }
+                self.fatherId(serverPerson.FatherId);
+                self.id(serverPerson.Id);
+                if (serverPerson.Mother != null) {
+                    self.motherFirstName(serverPerson.Mother.FirstName);
+                    self.motherLastName(serverPerson.Mother.LastName);
+                }
+                self.motherId(serverPerson.MotherId),
+                self.gender(serverPerson.Gender),
+                self.orderInChildrenOfParents(serverPerson.OrderInChildrenOfParents),
+                self.remark(serverPerson.Remark),
+                self.firstName(serverPerson.FirstName);
+                self.lastName(serverPerson.LastName);
+
+                if (serverPerson.ChildrenByFather) {
+                    var children = new Array();
+                    for (i = 0; i < serverPerson.ChildrenByFather.length; i++) {
+                        children.push(new ClientPerson(serverPerson.ChildrenByFather[i]));
+                    }
+                    self.childrenByFather(children);
+                }
+                if (serverPerson.ChildrenByMother) {
+                    var children = new Array();
+                    for (i = 0; i < serverPerson.ChildrenByMother.length; i++) {
+                        children.push(new ClientPerson(serverPerson.ChildrenByMother[i]));
+                    }
+                    self.childrenByMother(children);
+                }
+            }
+        }
+
+        var defaultServerPerson = {
+            BirthDay: '',
+            BirthTime: '',
+            ChildrenByFather: null,
+            ChildrenByMother: null,
+            DeathDay: '',
+            DeathTime: '',
+            FatherId: 0,
+            Id: 0,
+            FirstName: '',
+            LastName: '',
+            Remark: '',
+            MotherId: 0,
+            Gender: 1,
+            OrderInChildrenOfParents: 0
         };
 
         var viewModel = {
-            // person info
-            id: ko.observable(defaultPerson.id),
-            birthDay: ko.observable(defaultPerson.birthDay),
-            birthTime: ko.observable(defaultPerson.birthTime),
-            childrenByFather: ko.observableArray(),
-            deathDay: ko.observable(defaultPerson.deathDay),
-            deathTime: ko.observable(defaultPerson.deathTime),
-            fatherFirstName: ko.observable(),
-            fatherId: ko.observable(defaultPerson.fatherId),
-            fatherLastName: ko.observable(),
-            firstName: ko.observable(defaultPerson.firstName),
-            gender: ko.observable(defaultPerson.gender),
-            lastName: ko.observable(defaultPerson.lastName),
-            motherFirstName: ko.observable(),
-            motherId: ko.observable(defaultPerson.motherId),
-            motherLastName: ko.observable(),
-            orderInChildrenOfParents: ko.observable(defaultPerson.orderInChildrenOfParents),
-            remark: ko.observable(defaultPerson.remark),
-            //
+            viewPerson: ko.observable(new ClientPerson(defaultServerPerson)),
+
             errorMessage: ko.observable(),
         };
-        viewModel.formattedGender = ko.dependentObservable(function () {
-            return this.gender() == 1 ? "男" : "女";
-        }, viewModel);
-        viewModel.formattedBirthDay = ko.dependentObservable(function () {
-            return this.birthDay().indexOf("1:") >= 0 ? this.birthDay().replace("1:", "") : this.birthDay().replace("0:", "公元前 ");
-        }, viewModel);
-        viewModel.formattedDeathDay = ko.dependentObservable(function () {
-            return this.deathDay().indexOf("1:") >= 0 ? this.deathDay().replace("1:", "") : this.deathDay().replace("0:", "公元前 ");
-        }, viewModel);
+
         ko.applyBindings(viewModel); // Makes Knockout get to work
 
-        function updateViewModelOfPerson(result) {
-            viewModel.id(result.Id);
-            viewModel.birthDay(result.BirthDay);
-            viewModel.birthTime(result.BirthTime);
-            viewModel.deathDay(result.DeathDay);
-            viewModel.deathTime(result.DeathTime);
-            if (result.Father != null) {
-                viewModel.fatherFirstName(result.Father.FirstName);
-                viewModel.fatherLastName(result.Father.LastName);
-            }
-            viewModel.fatherId(result.FatherId);
-            if (result.Mother != null) {
-                viewModel.motherFirstName(result.Mother.FirstName);
-                viewModel.motherLastName(result.Mother.LastName);
-            }
-            viewModel.motherId(result.MotherId),
-            viewModel.gender(result.Gender),
-            viewModel.orderInChildrenOfParents(result.OrderInChildrenOfParents),
-            viewModel.remark(result.Remark),
-            viewModel.firstName(result.FirstName);
-            viewModel.lastName(result.LastName);
-            viewModel.childrenByFather(result.ChildrenByFather)
-        }
-
-        function zTreeOnClick(event, treeId, treeNode) {
-            viewModel.errorMessage(null); // clear error message
-            $.get("odata/People(" + treeNode.Id + ")?$expand=Mother($select=Id,FirstName,LastName),Father($select=Id,FirstName,LastName),ChildrenByFather($select=Id,FirstName,LastName)", null, updateViewModelOfPerson, "json");
-        };
 
         var setting = {
             async: {
@@ -175,7 +192,20 @@
             return responseData.value;
         }
 
+        function zTreeOnClick(event, treeId, treeNode) {
+            viewModel.errorMessage(null); // clear error message
+            $.get("odata/People(" + treeNode.Id + ")?$expand=Mother($select=Id,FirstName,LastName),Father($select=Id,FirstName,LastName),ChildrenByFather($select=Id,FirstName,LastName),ChildrenByMother($select=Id,FirstName,LastName)",
+                null,
+                updateViewModelOfPerson,
+                "json");
+        };
+
+        function updateViewModelOfPerson(result) {
+            viewModel.viewPerson(new ClientPerson(result));
+        }
+
         function getAsyncUrl(treeId, treeNode) {
+            // TODO: replace GetRootPersons with People?$filter=... and delete the server side action.
             var url = treeNode == undefined ? "/odata/GetRootPersons()" : "/odata/People(" + treeNode.Id + ")/ChildrenByFather";
             return url;
         };
