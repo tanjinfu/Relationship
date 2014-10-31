@@ -5,7 +5,7 @@ function editPersonClick() {
     viewModel.editPerson().birthTime(viewModel.viewPerson().birthTime());
     viewModel.editPerson().deathDay(viewModel.viewPerson().deathDay());
     viewModel.editPerson().deathTime(viewModel.viewPerson().deathTime());
-    viewModel.editPerson().fatherId(viewModel.viewPerson().id());
+    viewModel.editPerson().fatherId(viewModel.viewPerson().fatherId());
     viewModel.editPerson().firstName(viewModel.viewPerson().firstName());
     viewModel.editPerson().gender(viewModel.viewPerson().gender());
     viewModel.editPerson().lastName(viewModel.viewPerson().lastName());

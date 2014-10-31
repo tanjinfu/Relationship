@@ -68,10 +68,9 @@ namespace Relationship.Controllers
             originalPerson.Gender = person.Gender;
             originalPerson.LastName = person.LastName;
             originalPerson.MotherId = person.MotherId;
-            //TODO: why there is no this field?
-            //originalPerson.OrderInChildrenOfParents=person.
+            originalPerson.OrderInChildrenOfParents = person.OrderInChildrenOfParents;
             originalPerson.Remark = person.Remark; ;
-
+            //TODO: check circle.
             try
             {
                 db.SaveChanges();

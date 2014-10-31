@@ -9,7 +9,7 @@
     <script type="text/javascript" src="./Scripts/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
     <script type="text/javascript" src="./Scripts/knockout-3.2.0.debug.js"></script>
     <script>
-        
+
     </script>
 </head>
 <body>
@@ -32,10 +32,10 @@
                             <td colspan="8"><input type="button" data-bind="enable: viewPerson().id() != 0" onclick="editPersonClick()" value="修改" /></td>
                         </tr>
                         <tr>
-                            <td>姓</td>
-                            <td data-bind="text: viewPerson().lastName()"></td>
-                            <td>名</td>
-                            <td data-bind="text: viewPerson().firstName()"></td>
+                            <td>编号</td>
+                            <td data-bind="text: viewPerson().id()"></td>
+                            <td>姓名</td>
+                            <td><span data-bind="text: viewPerson().lastName()"></span><span data-bind="text: viewPerson().firstName()"></span> </td>
                             <td>性别</td>
                             <td data-bind="text: viewPerson().formattedGender()"></td>
                             <td>排行</td>
@@ -57,9 +57,9 @@
                             <td>母亲</td>
                             <td><span data-bind="text:viewPerson().motherLastName()"></span><span data-bind="text:viewPerson().motherFirstName()"></span></td>
                             <td></td>
-                            <td data-bind="text: viewPerson().formattedDeathDay()"></td>
                             <td></td>
-                            <td data-bind="text: viewPerson().deathTime()"></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>子女</td>

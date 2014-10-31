@@ -35,6 +35,7 @@ namespace Relationship
         public System.DateTime InsertedTime { get; set; }
         public long UpdatedBy { get; set; }
         public System.DateTime UpdatedTime { get; set; }
+        public Nullable<int> OrderInChildrenOfParents { get; set; }
     
         public virtual ICollection<Person> ChildrenByFather { get; set; }
         public virtual Person Father { get; set; }
