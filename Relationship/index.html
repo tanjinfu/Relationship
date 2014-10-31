@@ -29,7 +29,10 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="8"><input type="button" data-bind="enable: viewPerson().id() != 0" onclick="editPersonClick()" value="修改" /></td>
+                            <td colspan="8">
+                                <input type="button" onclick="addPersonClick()" value="添加" />
+                                <input type="button" data-bind="enable: viewPerson().id() != 0" onclick="editPersonClick()" value="修改" />
+                            </td>
                         </tr>
                         <tr>
                             <td>编号</td>

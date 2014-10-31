@@ -23,7 +23,7 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="bigint" Nullable="false" />
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="LastName" Type="nvarchar" MaxLength="10" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="40" />
           <Property Name="Gender" Type="tinyint" Nullable="false" />

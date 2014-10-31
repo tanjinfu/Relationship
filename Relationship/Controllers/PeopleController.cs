@@ -97,9 +97,13 @@ namespace Relationship.Controllers
             {
                 return BadRequest(ModelState);
             }
+            DateTime now = DateTime.Now;
+            person.InsertedBy = -1;
+            person.InsertedTime = now;
+            person.UpdatedBy = -1;
+            person.UpdatedTime = now;
 
             db.Person.Add(person);
-
             try
             {
                 db.SaveChanges();
