@@ -3,14 +3,16 @@
 <head>
     <title></title>
     <link rel="stylesheet" href="./Scripts/zTree_v3/css/zTreeStyle/zTreeStyle.css" />
+    <link rel="stylesheet" href="./Scripts/jquery-ui-1.11.2.custom/jquery-ui.css">
     <script type="text/javascript" src="./Scripts/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery-ui-1.11.2.custom/jquery-ui.js"></script>
     <script type="text/javascript" src="./Scripts/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
     <script type="text/javascript" src="./Scripts/knockout-3.2.0.debug.js"></script>
     <script type="text/javascript" src="./Scripts/relationship.js"></script>
 </head>
 <body>
     <div>
-        <p data-bind="visible: errorMessage">Error: <span data-bind="text: errorMessage"></span></p>
+        <p data-bind="visible: errorMessage"><span data-bind="text: errorMessage"></span></p>
     </div>
     <table style="vertical-align:top;align-self:center;width:1000px;border:1px">
         <tr>
@@ -20,54 +22,104 @@
             <td style="width:1%;background-color:gray"></td>
             <td style="width:100%">
                 <table style="width:100%">
-                    <tr>
-                        <td>姓</td>
-                        <td data-bind="text: viewPerson().lastName()"></td>
-                        <td>名</td>
-                        <td data-bind="text: viewPerson().firstName()"></td>
-                        <td>性别</td>
-                        <td data-bind="text: viewPerson().formattedGender()"></td>
-                        <td>排行</td>
-                        <td data-bind="text: viewPerson().orderInChildrenOfParents()"></td>
-                    </tr>
-                    <tr>
-                        <td>出生日期</td>
-                        <td data-bind="text: viewPerson().formattedBirthDay()"></td>
-                        <td>时间</td>
-                        <td data-bind="text: viewPerson().birthTime()"></td>
-                        <td>逝世日期</td>
-                        <td data-bind="text: viewPerson().formattedDeathDay()"></td>
-                        <td>时间</td>
-                        <td data-bind="text: viewPerson().deathTime()"></td>
-                    </tr>
-                    <tr>
-                        <td>父亲</td>
-                        <td><span data-bind="text:viewPerson().fatherLastName()"></span><span data-bind="text:viewPerson().fatherFirstName()"></span></td>
-                        <td>母亲</td>
-                        <td><span data-bind="text:viewPerson().motherLastName()"></span><span data-bind="text:viewPerson().motherFirstName()"></span></td>
-                        <td></td>
-                        <td data-bind="text: viewPerson().formattedDeathDay()"></td>
-                        <td></td>
-                        <td data-bind="text: viewPerson().deathTime()"></td>
-                    </tr>
-                    <tr>
-                        <td>子女</td>
-                        <td colspan="7">
-                            <span data-bind="foreach: viewPerson().childrenByFather()">
-                                <span data-bind="text: lastName"></span><span data-bind="text: firstName"></span>,
-                            </span>
-                            <span data-bind="foreach: viewPerson().childrenByMother()">
-                                <span data-bind="text: lastName"></span><span data-bind="text: firstName"></span>,
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>备注</td>
-                        <td colspan="7" data-bind="text: viewPerson().remark()"></td>
-                    </tr>
+                    <thead>
+                        <tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8"><button data-bind="enable:viewPerson().id()!=0,click:editPersonClick">修改</button></td>
+                        </tr>
+                        <tr>
+                            <td>姓</td>
+                            <td data-bind="text: viewPerson().lastName()"></td>
+                            <td>名</td>
+                            <td data-bind="text: viewPerson().firstName()"></td>
+                            <td>性别</td>
+                            <td data-bind="text: viewPerson().formattedGender()"></td>
+                            <td>排行</td>
+                            <td data-bind="text: viewPerson().orderInChildrenOfParents()"></td>
+                        </tr>
+                        <tr>
+                            <td>出生日期</td>
+                            <td data-bind="text: viewPerson().formattedBirthDay()"></td>
+                            <td>时间</td>
+                            <td data-bind="text: viewPerson().birthTime()"></td>
+                            <td>逝世日期</td>
+                            <td data-bind="text: viewPerson().formattedDeathDay()"></td>
+                            <td>时间</td>
+                            <td data-bind="text: viewPerson().deathTime()"></td>
+                        </tr>
+                        <tr>
+                            <td>父亲</td>
+                            <td><span data-bind="text:viewPerson().fatherLastName()"></span><span data-bind="text:viewPerson().fatherFirstName()"></span></td>
+                            <td>母亲</td>
+                            <td><span data-bind="text:viewPerson().motherLastName()"></span><span data-bind="text:viewPerson().motherFirstName()"></span></td>
+                            <td></td>
+                            <td data-bind="text: viewPerson().formattedDeathDay()"></td>
+                            <td></td>
+                            <td data-bind="text: viewPerson().deathTime()"></td>
+                        </tr>
+                        <tr>
+                            <td>子女</td>
+                            <td colspan="7">
+                                <span data-bind="foreach: viewPerson().childrenByFather()">
+                                    <span data-bind="text: lastName"></span><span data-bind="text: firstName"></span>,
+                                </span>
+                                <span data-bind="foreach: viewPerson().childrenByMother()">
+                                    <span data-bind="text: lastName"></span><span data-bind="text: firstName"></span>,
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>备注</td>
+                            <td colspan="7" data-bind="text: viewPerson().remark()"></td>
+                        </tr>
+                    </tbody>
                 </table>
             </td>
         </tr>
+    </table>
+    <!--This table is for editting. data-bind="visible:editPerson().id()>=0" -->
+    <table id="editPersonDialog" style="display: none; vertical-align: top" title="编辑">
+        <thead>
+            <tr><th style="width:80px"></th><th style="width: 160px"></th><th style="width: 80px"></th><th style="width: 160px"></th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>姓</td>
+                <td><input type="text" data-bind="value: editPerson().lastName()" /></td>
+                <td>名</td>
+                <td><input type="text" data-bind="value: editPerson().firstName()"></td>
+            </tr>
+            <tr>
+                <td>性别</td>
+                <td><input type="text" data-bind="value: editPerson().gender()"><br />1:男，0:女</td>
+                <td>排行</td>
+                <td><input type="text" data-bind="value: editPerson().orderInChildrenOfParents()"></td>
+            </tr>
+            <tr>
+                <td>出生日期</td>
+                <td><input type="text" data-bind="value: editPerson().birthDay()"><br />"0:0221-01-01"表示公元前221年1月1日;<br />"1:2014-10-31表示2014年10月31日"</td>
+                <td>时间</td>
+                <td><input type="text" data-bind="value: editPerson().birthTime()"></td>
+            </tr>
+            <tr>
+                <td>逝世日期</td>
+                <td><input type="text" data-bind="value: editPerson().deathDay()"></td>
+                <td>时间</td>
+                <td><input type="text" data-bind="value: editPerson().deathTime()"></td>
+            </tr>
+            <tr>
+                <td>父亲编号</td>
+                <td><input type="text" data-bind="value: editPerson().fatherId()" /><br />如果系统中尚未录入父亲信息请在此项输入0。</td>
+                <td>母亲编号</td>
+                <td><input type="text" data-bind="value: editPerson().motherId()" /><br />如果系统中尚未录入母亲信息请在此项输入0。</td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td colspan="3"><textarea data-bind="value: editPerson().remark()" style="width: 99%"></textarea></td>
+            </tr>
+        </tbody>
     </table>
     <script>
         function ClientPerson(serverPerson) {
@@ -161,12 +213,33 @@
 
         var viewModel = {
             viewPerson: ko.observable(new ClientPerson(defaultServerPerson)),
-
+            editPerson: ko.observable(new ClientPerson(defaultServerPerson)),
             errorMessage: ko.observable(),
+
+            editPersonClick: function () {
+                this.editPerson().birthDay(this.viewPerson().birthDay());
+                this.editPerson().id(this.viewPerson().id());
+                this.editPerson().birthTime(this.viewPerson().birthTime());
+                this.editPerson().deathDay(this.viewPerson().deathDay());
+                this.editPerson().deathTime(this.viewPerson().deathTime());
+                this.editPerson().fatherId(this.viewPerson().id());
+                this.editPerson().firstName(this.viewPerson().firstName());
+                this.editPerson().gender(this.viewPerson().gender());
+                this.editPerson().lastName(this.viewPerson().lastName());
+                this.editPerson().motherId(this.viewPerson().motherId());
+                this.editPerson().orderInChildrenOfParents(this.viewPerson().orderInChildrenOfParents());
+                this.editPerson().remark = (this.viewPerson().remark());
+                $("#editPersonDialog").dialog({
+                    autoOpen: false,
+                    buttons: [{ text: "Ok", click: function () { $(this).dialog("close"); } }],
+                    modal: true,
+                    width: 600,
+                });
+                $("#editPersonDialog").dialog("open");
+            },
         };
 
         ko.applyBindings(viewModel); // Makes Knockout get to work
-
 
         var setting = {
             async: {
@@ -194,6 +267,7 @@
 
         function zTreeOnClick(event, treeId, treeNode) {
             viewModel.errorMessage(null); // clear error message
+            viewModel.editPerson(new ClientPerson(defaultServerPerson));
             $.get("odata/People(" + treeNode.Id + ")?$expand=Mother($select=Id,FirstName,LastName),Father($select=Id,FirstName,LastName),ChildrenByFather($select=Id,FirstName,LastName),ChildrenByMother($select=Id,FirstName,LastName)",
                 null,
                 updateViewModelOfPerson,

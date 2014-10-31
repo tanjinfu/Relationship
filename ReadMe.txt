@@ -5,8 +5,10 @@ reference the demo.
 
 
 Cordova: build cross platform mobile apps.
-
+knockout turtorial:
 http://www.cnblogs.com/TomXu/archive/2011/11/21/2257154.html
+
+http://api.jqueryui.com/dialog/
 
 
 2014-10-29 Wednesday
