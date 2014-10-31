@@ -54,8 +54,23 @@ namespace Relationship.Controllers
             {
                 return BadRequest();
             }
-
-            db.Entry(person).State = EntityState.Modified;
+            Person originalPerson = db.Person.SingleOrDefault(p => p.Id == key);
+            if (originalPerson == null)
+            {
+                return BadRequest("人员不存在：" + key);
+            }
+            originalPerson.BirthDay = person.BirthDay;
+            originalPerson.BirthTime = person.BirthTime;
+            originalPerson.DeathDay = person.DeathDay;
+            originalPerson.DeathTime = person.DeathTime;
+            originalPerson.FatherId = person.FatherId;
+            originalPerson.FirstName = person.FirstName;
+            originalPerson.Gender = person.Gender;
+            originalPerson.LastName = person.LastName;
+            originalPerson.MotherId = person.MotherId;
+            //TODO: why there is no this field?
+            //originalPerson.OrderInChildrenOfParents=person.
+            originalPerson.Remark = person.Remark; ;
 
             try
             {
@@ -73,7 +88,7 @@ namespace Relationship.Controllers
                 }
             }
 
-            return Updated(person);
+            return Ok(originalPerson);
         }
 
         // POST odata/People
@@ -194,7 +209,7 @@ namespace Relationship.Controllers
         [ODataRoute("GetRootPersons()")]
         public IHttpActionResult GetRootPersons()
         {
-            IQueryable<Person> rootPersons =db.Person.Where(p => p.FatherId == null);
+            IQueryable<Person> rootPersons = db.Person.Where(p => p.FatherId == null);
             return Ok(rootPersons);
         }
 

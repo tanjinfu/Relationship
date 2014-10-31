@@ -8,6 +8,9 @@
     <script type="text/javascript" src="./Scripts/jquery-ui-1.11.2.custom/jquery-ui.js"></script>
     <script type="text/javascript" src="./Scripts/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
     <script type="text/javascript" src="./Scripts/knockout-3.2.0.debug.js"></script>
+    <script>
+        
+    </script>
 </head>
 <body>
     <div>
@@ -26,7 +29,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="8"><button data-bind="enable:viewPerson().id()!=0,click:editPersonClick">修改</button></td>
+                            <td colspan="8"><input type="button" data-bind="enable: viewPerson().id() != 0" onclick="editPersonClick()" value="修改" /></td>
                         </tr>
                         <tr>
                             <td>姓</td>
@@ -86,37 +89,37 @@
         <tbody>
             <tr>
                 <td>姓</td>
-                <td><input type="text" data-bind="value: editPerson().lastName()" /></td>
+                <td><input type="text" data-bind="value: editPerson().lastName" /></td>
                 <td>名</td>
-                <td><input type="text" data-bind="value: editPerson().firstName()"></td>
+                <td><input type="text" data-bind="value: editPerson().firstName"></td>
             </tr>
             <tr>
                 <td>性别</td>
-                <td><input type="text" data-bind="value: editPerson().gender()"><br />1:男，0:女</td>
+                <td><input type="text" data-bind="value: editPerson().gender"><br />1:男，0:女</td>
                 <td>排行</td>
-                <td><input type="text" data-bind="value: editPerson().orderInChildrenOfParents()"></td>
+                <td><input type="text" data-bind="value: editPerson().orderInChildrenOfParents"></td>
             </tr>
             <tr>
                 <td>出生日期</td>
-                <td><input type="text" data-bind="value: editPerson().birthDay()"><br />"0:0221-01-01"表示公元前221年1月1日;<br />"1:2014-10-31表示2014年10月31日"</td>
+                <td><input type="text" data-bind="value: editPerson().birthDay"><br />"0:0221-01-01"表示公元前221年1月1日;<br />"1:2014-10-31表示2014年10月31日"</td>
                 <td>时间</td>
-                <td><input type="text" data-bind="value: editPerson().birthTime()"></td>
+                <td><input type="text" data-bind="value: editPerson().birthTime"></td>
             </tr>
             <tr>
                 <td>逝世日期</td>
-                <td><input type="text" data-bind="value: editPerson().deathDay()"></td>
+                <td><input type="text" data-bind="value: editPerson().deathDay"></td>
                 <td>时间</td>
-                <td><input type="text" data-bind="value: editPerson().deathTime()"></td>
+                <td><input type="text" data-bind="value: editPerson().deathTime"></td>
             </tr>
             <tr>
                 <td>父亲编号</td>
-                <td><input type="text" data-bind="value: editPerson().fatherId()" /><br />如果系统中尚未录入父亲信息请在此项输入0。</td>
+                <td><input type="text" data-bind="value: editPerson().fatherId" /><br />如果系统中尚未录入父亲信息请在此项输入0。</td>
                 <td>母亲编号</td>
-                <td><input type="text" data-bind="value: editPerson().motherId()" /><br />如果系统中尚未录入母亲信息请在此项输入0。</td>
+                <td><input type="text" data-bind="value: editPerson().motherId" /><br />如果系统中尚未录入母亲信息请在此项输入0。</td>
             </tr>
             <tr>
                 <td>备注</td>
-                <td colspan="3"><textarea data-bind="value: editPerson().remark()" style="width: 99%"></textarea></td>
+                <td colspan="3"><textarea data-bind="value: editPerson().remark" style="width: 99%"></textarea></td>
             </tr>
         </tbody>
     </table>

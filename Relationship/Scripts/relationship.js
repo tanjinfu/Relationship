@@ -1,4 +1,71 @@
-﻿function ClientPerson(serverPerson) {
+﻿var zTreeObj;
+function editPersonClick() {
+    viewModel.editPerson().birthDay(viewModel.viewPerson().birthDay());
+    viewModel.editPerson().id(viewModel.viewPerson().id());
+    viewModel.editPerson().birthTime(viewModel.viewPerson().birthTime());
+    viewModel.editPerson().deathDay(viewModel.viewPerson().deathDay());
+    viewModel.editPerson().deathTime(viewModel.viewPerson().deathTime());
+    viewModel.editPerson().fatherId(viewModel.viewPerson().id());
+    viewModel.editPerson().firstName(viewModel.viewPerson().firstName());
+    viewModel.editPerson().gender(viewModel.viewPerson().gender());
+    viewModel.editPerson().lastName(viewModel.viewPerson().lastName());
+    viewModel.editPerson().motherId(viewModel.viewPerson().motherId());
+    viewModel.editPerson().orderInChildrenOfParents(viewModel.viewPerson().orderInChildrenOfParents());
+    viewModel.editPerson().remark(viewModel.viewPerson().remark());
+    $("#editPersonDialog").dialog({
+        autoOpen: false,
+        buttons: [
+            {
+                text: "Ok",
+                click: function () {
+                    viewModel.errorMessage(null);
+                    var jsonData = {
+                        BirthDay: viewModel.editPerson().birthDay(),
+                        BirthTime: viewModel.editPerson().birthTime(),
+                        DeathDay: viewModel.editPerson().deathDay(),
+                        DeathTime: viewModel.editPerson().deathTime(),
+                        FatherId: viewModel.editPerson().fatherId(),
+                        FirstName: viewModel.editPerson().firstName(),
+                        Gender: viewModel.editPerson().gender(),
+                        Id: viewModel.editPerson().id(),
+                        LastName: viewModel.editPerson().lastName(),
+                        MotherId: viewModel.editPerson().motherId(),
+                        OrderInChildrenOfParents: viewModel.editPerson().orderInChildrenOfParents(),
+                        Remark: viewModel.editPerson().remark(),
+                    };
+                    var data = ko.toJSON(jsonData);
+                    var id = viewModel.editPerson().id();
+                    $.ajax({
+                        type: "PUT",
+                        url: "/odata/People(" + id + ")",
+                        contentType: "application/json; charset=utf-8",
+                        data: data,
+                        success: function (returnedData) {
+                            viewModel.viewPerson(new ClientPerson(returnedData));
+                            responseDataToTreeNode(returnedData);
+                            var nodes = zTreeObj.getSelectedNodes();
+                            var selectedTreeNode = nodes[0];
+                            selectedTreeNode.BirthDay = returnedData.BirthDay;
+                            selectedTreeNode.BirthTime = returnedData.BirthTime;
+                            selectedTreeNode.DeathDay = returnedData.DeathDay;
+                            selectedTreeNode.DeathTime = returnedData.DeathTime;
+                            selectedTreeNode.isParent = returnedData.isParent;
+                            selectedTreeNode.name = returnedData.name;
+                            $("#editPersonDialog").dialog("close");
+                        },
+                        failure: function (response) {
+                            viewModel.errorMessage(response);
+                        }
+                    });
+                }
+            }],
+        modal: true,
+        width: 600,
+    });
+    $("#editPersonDialog").dialog("open");
+};
+
+function ClientPerson(serverPerson) {
     var self = this;
     self.birthDay = ko.observable();
     self.birthTime = ko.observable();
@@ -78,42 +145,21 @@ var defaultServerPerson = {
     DeathDay: '',
     DeathTime: '',
     FatherId: 0,
+    Gender: 1,
     Id: 0,
     FirstName: '',
     LastName: '',
-    Remark: '',
     MotherId: 0,
-    Gender: 1,
-    OrderInChildrenOfParents: 0
+    OrderInChildrenOfParents: 0,
+    Remark: '',
 };
 
 var viewModel = {
     viewPerson: ko.observable(new ClientPerson(defaultServerPerson)),
     editPerson: ko.observable(new ClientPerson(defaultServerPerson)),
     errorMessage: ko.observable(),
-
-    editPersonClick: function () {
-        this.editPerson().birthDay(this.viewPerson().birthDay());
-        this.editPerson().id(this.viewPerson().id());
-        this.editPerson().birthTime(this.viewPerson().birthTime());
-        this.editPerson().deathDay(this.viewPerson().deathDay());
-        this.editPerson().deathTime(this.viewPerson().deathTime());
-        this.editPerson().fatherId(this.viewPerson().id());
-        this.editPerson().firstName(this.viewPerson().firstName());
-        this.editPerson().gender(this.viewPerson().gender());
-        this.editPerson().lastName(this.viewPerson().lastName());
-        this.editPerson().motherId(this.viewPerson().motherId());
-        this.editPerson().orderInChildrenOfParents(this.viewPerson().orderInChildrenOfParents());
-        this.editPerson().remark = (this.viewPerson().remark());
-        $("#editPersonDialog").dialog({
-            autoOpen: false,
-            buttons: [{ text: "Ok", click: function () { $(this).dialog("close"); } }],
-            modal: true,
-            width: 600,
-        });
-        $("#editPersonDialog").dialog("open");
-    },
 };
+
 
 ko.applyBindings(viewModel); // Makes Knockout get to work
 
@@ -133,12 +179,14 @@ var setting = {
 function filter(treeId, parentNode, responseData) {
     if (!responseData) return null;
     for (var i = 0, l = responseData.value.length; i < l; i++) {
-        responseData.value[i].name = responseData.value[i].LastName + responseData.value[i].FirstName;
-        if (responseData.value[i].Gender == 1) {
-            responseData.value[i].isParent = true;
-        }
+        responseDataToTreeNode(responseData.value[i]);
     }
     return responseData.value;
+}
+
+function responseDataToTreeNode(responseData) {
+    responseData.name = responseData.LastName + responseData.FirstName + "-" + responseData.Id;
+    responseData.isParent = responseData.Gender == 1;
 }
 
 function zTreeOnClick(event, treeId, treeNode) {
@@ -161,5 +209,5 @@ function getAsyncUrl(treeId, treeNode) {
 };
 
 $(document).ready(function () {
-    $.fn.zTree.init($("#treeDemo"), setting);
+    zTreeObj = $.fn.zTree.init($("#treeDemo"), setting);
 });
