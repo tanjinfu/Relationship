@@ -104,6 +104,57 @@ function editPersonClick() {
     $("#editPersonDialog").dialog("open");
 };
 
+function deletePersonClick() {
+    $( "#dialog-confirm" ).dialog({
+        resizable: false,
+        height:220,
+        modal: true,
+        buttons: {
+            "确定": function() {
+                var id = viewModel.viewPerson().id();
+                $.ajax({
+                    type: "DELETE",
+                    url: "/odata/People(" + id + ")",
+                    success: function () {
+                        $("#dialog-confirm").dialog("close");
+                        var deletedNode=zTreeObj.getNodesByParam("Id", id, null)[0];
+                        if(deletedNode.Gender==1){
+                            var childrenNodes = deletedNode.children;
+                            if (childrenNodes != null) {
+                                for (var i = 0; i < childrenNodes.length; i++) {
+                                    var childNode = childrenNodes[i];
+                                    childNode.FatherId = null;
+                                    childNode.Father = null;
+                                    zTreeObj.updateNode(childNode);
+                                    zTreeObj.removeNode(childNode);
+                                    zTreeObj.addNodes(null, childNode);
+                                }
+                            }
+                        }
+                        var nextSelectedNode = deletedNode.getParentNode();
+                        if (!nextSelectedNode) {
+                            nextSelectedNode=deletedNode.getPreNode();
+                        }
+                        zTreeObj.removeNode(deletedNode);
+                        if (nextSelectedNode) {
+                            zTreeObj.selectNode(nextSelectedNode);
+                            zTreeOnClick(null, "treeDemo", nextSelectedNode);
+                        }
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+                });
+            },
+            "取消": function() {
+                $( "#dialog-confirm" ).dialog( "close" );
+            }
+        }
+    });
+    
+    $("#dialog-confirm").dialog("open");
+};
+
 function ClientPerson(serverPerson) {
     var self = this;
     self.birthDay = ko.observable();
@@ -158,9 +209,9 @@ function ClientPerson(serverPerson) {
             self.motherFirstName(serverPerson.Mother.FirstName);
             self.motherLastName(serverPerson.Mother.LastName);
         }
-        self.motherId(serverPerson.MotherId),
-        self.orderInChildrenOfParents(serverPerson.OrderInChildrenOfParents),
-        self.remark(serverPerson.Remark),
+        self.motherId(serverPerson.MotherId);
+        self.orderInChildrenOfParents(serverPerson.OrderInChildrenOfParents);
+        self.remark(serverPerson.Remark);
         
         if (serverPerson.ChildrenByFather) {
             var children = new Array();

@@ -169,6 +169,22 @@ namespace Relationship.Controllers
             }
 
             db.Person.Remove(person);
+            if (person.Gender == 1)
+            {
+                var childrenByFather = db.Person.Where<Person>(p => p.FatherId == key);
+                foreach (Person child in childrenByFather.ToList<Person>())
+                {
+                    child.FatherId = null;
+                }
+            }
+            else if (person.Gender == 0)
+            {
+                var childrenByMother = db.Person.Where<Person>(p => p.MotherId == key);
+                foreach (Person child in childrenByMother.ToList<Person>())
+                {
+                    child.MotherId = null;
+                }
+            }
             db.SaveChanges();
 
             return StatusCode(HttpStatusCode.NoContent);
