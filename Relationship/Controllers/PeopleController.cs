@@ -36,7 +36,7 @@ namespace Relationship.Controllers
         }
 
         // GET odata/People(5)
-        [EnableQuery]
+        [EnableQuery(MaxExpansionDepth = 9)]
         public SingleResult<Person> Get([FromODataUri] long key)
         {
             return SingleResult.Create(db.Person.Where(person => person.Id == key));

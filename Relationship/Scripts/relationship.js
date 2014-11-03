@@ -174,7 +174,7 @@ function drawDecendantDiagramClick() {
     var id = viewModel.viewPerson().id();
     $.ajax({
         type: "GET",
-        url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=2)",
+        url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
         success: function (returnedData) {
             $("#dialog-diagram").dialog({
                 resizable: true,
