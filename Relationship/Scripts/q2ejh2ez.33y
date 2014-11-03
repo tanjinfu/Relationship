@@ -2,12 +2,12 @@
 var charWidthInPixel = 20;
 var charHeightInPixel = 20;
 var diagramNodeWidthInPixel = 22;
-var diagramNodeHorizentalDistanceInPixel = 5; // the distance between the top right point of this node and the top left of the next one.
-var diagramNodeVerticalDistanceInPixel = 20; // the distance between the bottom of this node and the top of the next one.
-var diagramTopMarginInPixel = 10;
-var diagramLeftMarginInPixel = 10;
-var diagramBottomMarginInPixel = 10;
-var diagramRightMarginInPixel = 10;
+var digramNodeHorizentalDistanceInPixel = 5; // the distance between the top right point of this node and the top left of the next one.
+var digramNodeVerticalDistanceInPixel = 10; // the distance between the bottom of this node and the top of the next one.
+var digramTopMarginInPixel = 10;
+var digramLeftMarginInPixel = 10;
+var digramBottomMarginInPixel = 10;
+var digramRightMarginInPixel = 10;
 
 function addPersonClick() {
     var newClientPerson = new ClientPerson();
@@ -167,7 +167,7 @@ function deletePersonClick() {
 
 function drawDecendantDiagramClick() {
     var gender = viewModel.viewPerson().gender();
-    if (gender != null && gender == 0) {
+    if (gender && gender == 0) {
         alert("请选择男性。");
         return;
     }
@@ -182,12 +182,8 @@ function drawDecendantDiagramClick() {
                 width: 800,
                 modal: true,
             });
-            var diagramData = initDiagramData(returnedData);
-            calculatePosition(diagramData);
-            //var c = $("#diagram");
-            var c = document.getElementById("diagram");
-            drawDiagram(c, diagramData);
             $("#dialog-diagram").dialog("open");
+            alert(returnedData);
         },
         failure: function (response) {
             alert(response);
@@ -215,178 +211,118 @@ function DiagramData() {
     self.nodes = new Array();
 }
 
-function drawDiagram(c, diagramData) {
-    // Make sure we don't execute when canvas isn't supported
-    if (c.getContext) {
-        c.width = diagramData.width;
-        c.height = diagramData.height;
-        // use getContext to use the c for drawing
-        var ctx = c.getContext('2d');
-        ctx.font = charWidthInPixel + "px sans-serif";
-        ctx.clearRect(0, 0, c.width, c.height);
-        var nodes = diagramData.nodes;
-        var rootNode = nodes[0];
-        var nodeHeight = diagramData.nodeHeight;
-        var nodeWidth = diagramNodeWidthInPixel;
-        drawRectangle(ctx, rootNode.x, rootNode.y, nodeWidth, nodeHeight, rootNode.gender == 0);
-        drawString(ctx, rootNode.fullName, rootNode.x + ctx.lineWidth, rootNode.y + charHeightInPixel - 1, charHeightInPixel);
-
-        var hashMap = {};
-        for (var i = 0; i < nodes.length; i++) {
-            hashMap[nodes[i].id] = nodes[i];
-        }
-
-        for (var i = 1; i < nodes.length; i++) {
-            var currentNode = nodes[i];
-            drawRectangle(ctx, currentNode.x, currentNode.y, nodeWidth, nodeHeight, currentNode.gender == 0);
-            drawString(ctx, currentNode.fullName, currentNode.x + ctx.lineWidth, currentNode.y + charHeightInPixel - 1, charHeightInPixel);
-
-            var parentNode = hashMap[currentNode.parentId];
-            drawPolyLine(ctx, parentNode.x + nodeWidth / 2, parentNode.y + nodeHeight, currentNode.x + nodeWidth / 2, currentNode.y);
-        }
-    } else {
-        alert('请使用 Safari, Chrome 或IE8+.');
-    }
-}
-
-function drawString(context, str, x, y, charHeight) {
-    for (i = 0; i < str.length; i++) {
-        context.fillText(str[i], x, y + charHeight * i);
-    }
-}
-
-function drawRectangle(context, topLeftX, topLeftY, width, height, dottedLine) {
-    //TODO: draw dottedLine
-    context.strokeRect(topLeftX, topLeftY, width, height);
-}
-
-function drawPolyLine(context, beginX, beginY, endX, endY) {
-    context.beginPath();
-    context.moveTo(beginX, beginY);
-    context.lineTo(beginX, (beginY + endY) / 2);
-    context.lineTo(endX, (beginY + endY) / 2);
-    context.lineTo(endX, endY);
-    context.stroke();
-}
-
 function calculatePosition(diagramData) {
     var nodes = diagramData.nodes;
     var hashMap = {};
-
     var rootNode = nodes[0];
-    rootNode.x = diagramLeftMarginInPixel;
-    rootNode.y = diagramTopMarginInPixel;
+    rootNode.x = digramLeftMarginInPixel;
+    rootNode.y = digramTopMarginInPixel;
+    var previousNode = rootNode;
     hashMap[rootNode.id] = rootNode;
+    //previousNode.level = -1;
+    //previousNode.x = digramLeftMarginInPixel - (diagramNodeWidthInPixel + digramNodeHorizentalDistanceInPixel);//because currently the rootNode.x equals 0.
+    //previousNode.y = rootNode.y * (diagramData.nodeHeight + digramNodeVerticalDistanceInPixel);
 
-    var parentNode = null;
-    var currentNode = null;
-
-    for (var i = 1; i < nodes.length; i++) {
-        currentNode = nodes[i];
-        hashMap[currentNode.id] = currentNode;
-        parentNode = hashMap[currentNode.parentId];
-        currentNode.y = parentNode.y + diagramNodeVerticalDistanceInPixel + diagramData.nodeHeight;
-    }
-
-    var previousNode = null;
-    var maxX = rootNode.x;
+    //var parentNode = new DiagramNode();
+    //previousNode.id=rootNode.parentId;
+    //previousNode.x = digramLeftMarginInPixel - (diagramNodeWidthInPixel + digramNodeHorizentalDistanceInPixel);//because currently the rootNode.x equals 0.
+    //previousNode.y = rootNode.y * (diagramData.nodeHeight + digramNodeVerticalDistanceInPixel);
     var changed = true;
     while (changed) {
         changed = false;
-        previousNode = rootNode;
-        for (var i = 1; i < nodes.length; i++) {
-            currentNode = nodes[i];
-            previousNode = nodes[i - 1];
-            parentNode = hashMap[currentNode.parentId];
+
+        var i = 1;
+        while (i < nodes.length) {
+            var currentNode = nodes[i];
+            hashMap[currentNode.id] = currentNode;
+            var parentNode = hashMap[currentNode.parentId];
 
             if (currentNode.level == previousNode.level) {
-                var expectedX = previousNode.x + (diagramNodeWidthInPixel + diagramNodeHorizentalDistanceInPixel);
+                var expectedX = previousNode.x + (diagramNodeWidthInPixel + digramNodeHorizentalDistanceInPixel);
                 if (currentNode.parentId == previousNode.parentId) {
-                    if (currentNode.x < expectedX) {
-                        currentNode.x = expectedX;
-                    }
+                    currentNode.x = expectedX;
                 }
                 else {
                     if (expectedX <= parentNode.x) {
                         currentNode.x = parentNode.x;
                     } else {
-                        changed = true;
                         var tempNodeA = previousNode;
                         var tempNodeB = currentNode;
-                        while (tempNodeA.id != tempNodeB.id) {
+                        while (tempNodeA.parentId != tempNodeB.parentId) {
                             tempNodeB.x = expectedX;
                             tempNodeA = hashMap[tempNodeA.parentId];
                             tempNodeB = hashMap[tempNodeB.parentId];
-                        }// while
+                            changed = true;
+                        }
                     }
                 }
             } else {
                 currentNode.x = parentNode.x;
             }
-            if (maxX < currentNode.x) {
-                maxX = currentNode.x;
-            }
-        }// for
-    }// while(changed)
-    diagramData.width = maxX + diagramNodeWidthInPixel + diagramRightMarginInPixel;
-}
+            currentNode.x = digramLeftMarginInPixel + currentNode.x * (diagramNodeWidthInPixel + digramNodeHorizentalDistanceInPixel);
+            currentNode.y = digramTopMarginInPixel + currentNode.y * (diagramData.nodeHeight + digramNodeVerticalDistanceInPixel)
 
+        }
+    }
+}
 function initDiagramData(serverData) {
     var diagramData = new DiagramData();
-
     var rootDiagramNode = new DiagramNode();
-    rootDiagramNode.fullName = serverData.LastName + serverData.FirstName;
-    rootDiagramNode.gender = serverData.Gender;
-    rootDiagramNode.id = serverData.Id;
-
+    diagramData.fullName = serverData.FullName;
+    diagramData.gender = serverData.Gender;
+    diagramData.id = serverData.Id;
     rootDiagramNode.level = 0; // level starts from 0.
     rootDiagramNode.order = 0; // order starts from 0.
     rootDiagramNode.x = 0;
     rootDiagramNode.y = 0;
     diagramData.nodes.push(rootDiagramNode);
 
+    var maxX = rootDiagramNode.x;
+    //var maxY = rootDiagramNode.y;
+    var maxLevel = diagramNode.level;
     var maxFullNameLenght = rootDiagramNode.fullName.length;
 
-    var hashMap = {};
-    hashMap[rootDiagramNode.id] = rootDiagramNode;
-
-    var serverNodes = new Array();
-    serverNodes.push(serverData);
-
     var nodes = diagramData.nodes;
-
-    while (serverNodes.length > 0) {
-        var parentServerNode = serverNodes.shift();
-        var parentDiagramNode = hashMap[parentServerNode.Id];
-        if (parentServerNode.ChildrenByFather) {
-            var childLevel = parentDiagramNode.level + 1;
-            for (var j = 0; j < parentServerNode.ChildrenByFather.length; j++) {
-                var childServerNode = parentServerNode.ChildrenByFather[j];
+    nodes.push(rootDiagramNode);
+    var i = 0;
+    while (i <= nodes.length) {
+        var parentNode = nodes[i];
+        if (parentNode.ChildrenByFather) {
+            var childLevel = parentNode.Level + 1;
+            //var childY = parentNode.y + 1;
+            for (var j = 0; j < parentNode.ChildrenByFather.length; j++) {
+                var serverChild = parentNode.ChildrenByFather[j];
                 var childDiagramNode = new DiagramNode();
-                childDiagramNode.fullName = childServerNode.LastName + childServerNode.FirstName;
-                childDiagramNode.gender = childServerNode.Gender;
-                childDiagramNode.id = childServerNode.Id;
-                childDiagramNode.parentId = parentDiagramNode.id;
+                childDiagramNode.fullName = serverChild.FullName;
+                childDiagramNode.gender = serverChild.Gender;
+                childDiagramNode.id = serverChild.Id;
+                childDiagramNode.parentId = parentNode.id;
                 childDiagramNode.level = childLevel;
                 childDiagramNode.order = j;
+                childDiagramNode.x = parentNode.x + j;
+                //childDiagramNode.y = childY;
                 nodes.push(childDiagramNode);
-                serverNodes.push(childServerNode);
-                hashMap[childDiagramNode.id] = childDiagramNode;
             }
         }
-        if (parentDiagramNode.fullName.length > maxFullNameLenght) {
-            maxFullNameLenght = parentDiagramNode.fullName.length;
+        if (parentNode.x > maxX) {
+            maxX = parentNode.x;
+        }
+        if (parentNode.level > maxLevel) {
+            maxLevel = parentNode.level;
+        }
+        if (parentNode.fullName.length > maxFullNameLenght) {
+            maxFullNameLenght = parentNode.fullName.length;
         }
     }
-
+    diagramData.width = digramLeftMarginInPixel +
+        maxX * (digramNodeWidthInPixel + digramNodeHorizentalDistanceInPixel) + digramNodeWidthInPixel +
+        digramRightMarginInPixel;
     var nodeHeight = maxFullNameLenght * charHeightInPixel;
     diagramData.nodeHeight = nodeHeight;
-    var maxLevel = nodes[nodes.length - 1].level;
-
-    diagramData.height = diagramTopMarginInPixel +
-        maxLevel * (nodeHeight + diagramNodeVerticalDistanceInPixel) + nodeHeight +
-        diagramBottomMarginInPixel;
-    return diagramData;
+    diagramData.height = digramTopMarginInPixel +
+        maxLevel * (nodeHeight + digramNodeVerticalDistanceInPixel) + nodeHeight +
+        digramBottomMarginInPixel;
+    return digramData;
 }
 
 function ClientPerson(serverPerson) {
