@@ -289,10 +289,14 @@ function calculatePosition(diagramData) {
     }
 
     var previousNode = null;
+    var tempNode = null;
     var maxX = rootNode.x;
-    var changed = true;
-    while (changed) {
-        changed = false;
+    var iterationCount = 0;
+    var parentIsAltered = true;
+    console.time("calculateXTimer");
+    while (parentIsAltered) {
+        iterationCount++;
+        parentIsAltered = false;
         previousNode = rootNode;
         for (var i = 1; i < nodes.length; i++) {
             currentNode = nodes[i];
@@ -300,25 +304,20 @@ function calculatePosition(diagramData) {
             parentNode = hashMap[currentNode.parentId];
 
             if (currentNode.level == previousNode.level) {
-                var expectedX = previousNode.x + (diagramNodeWidthInPixel + diagramNodeHorizentalDistanceInPixel);
-                if (currentNode.parentId == previousNode.parentId) {
-                    if (currentNode.x < expectedX) {
-                        currentNode.x = expectedX;
-                    }
-                }
-                else {
-                    if (expectedX <= parentNode.x) {
-                        currentNode.x = parentNode.x;
-                    } else {
-                        changed = true;
-                        var tempNodeA = previousNode;
-                        var tempNodeB = currentNode;
-                        while (tempNodeA.id != tempNodeB.id) {
-                            tempNodeB.x = expectedX;
-                            tempNodeA = hashMap[tempNodeA.parentId];
-                            tempNodeB = hashMap[tempNodeB.parentId];
-                        }// while
-                    }
+                var expectedX = Math.max(
+                    parentNode.x,
+                    previousNode.x + (diagramNodeWidthInPixel + diagramNodeHorizentalDistanceInPixel),
+                    currentNode.x);
+                currentNode.x = expectedX;
+
+                if (currentNode.parentId != previousNode.parentId && expectedX > parentNode.x) {
+                    parentIsAltered = true;
+
+                    tempNode = parentNode;
+                    while (tempNode.x == parentNode.x) {
+                        tempNode.x = expectedX;
+                        tempNode = hashMap[tempNode.parentId];
+                    }// while
                 }
             } else {
                 currentNode.x = parentNode.x;
@@ -327,7 +326,9 @@ function calculatePosition(diagramData) {
                 maxX = currentNode.x;
             }
         }// for
-    }// while(changed)
+    }// while(parentIsAltered)
+    console.timeEnd("calculateXTimer");
+    console.log("Iterates", iterationCount, "times.");
     diagramData.width = maxX + diagramNodeWidthInPixel + diagramRightMarginInPixel;
 }
 
