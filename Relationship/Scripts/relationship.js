@@ -55,7 +55,7 @@ function addPersonClick() {
                 }
             }],
         modal: true,
-        width: 600,
+        width: 700,
     });
     $("#editPersonDialog").dialog("open");
 };
@@ -109,7 +109,7 @@ function editPersonClick() {
                 }
             }],
         modal: true,
-        width: 600,
+        width: 700,
     });
     $("#editPersonDialog").dialog("open");
 };
@@ -363,6 +363,10 @@ function initDiagramData(serverData) {
             var childLevel = parentDiagramNode.level + 1;
             for (var j = 0; j < parentServerNode.ChildrenByFather.length; j++) {
                 var childServerNode = parentServerNode.ChildrenByFather[j];
+                // If only display male, uncomment these 3 lines as the $filter doesn't work within $expand.
+                //if (childServerNode.Gender == 0) {
+                //    continue;
+                //}
                 var childDiagramNode = new DiagramNode();
                 childDiagramNode.fullName = childServerNode.LastName + childServerNode.FirstName;
                 childDiagramNode.gender = childServerNode.Gender;
