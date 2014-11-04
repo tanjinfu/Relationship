@@ -89,18 +89,29 @@ function editPersonClick() {
                         contentType: "application/json; charset=utf-8",
                         data: data,
                         success: function (returnedData) {
-                            viewModel.viewPerson(new ClientPerson(returnedData));
-                            responseDataToTreeNode(returnedData);
-                            var nodes = zTreeObj.getSelectedNodes();
-                            var selectedTreeNode = nodes[0];
-                            selectedTreeNode.BirthDay = returnedData.BirthDay;
-                            selectedTreeNode.BirthTime = returnedData.BirthTime;
-                            selectedTreeNode.DeathDay = returnedData.DeathDay;
-                            selectedTreeNode.DeathTime = returnedData.DeathTime;
-                            selectedTreeNode.isParent = returnedData.isParent;
-                            selectedTreeNode.name = returnedData.name;
-                            zTreeObj.updateNode(selectedTreeNode);
                             $("#editPersonDialog").dialog("close");
+                            responseDataToTreeNode(returnedData);
+                            var originalTreeNode = zTreeObj.getNodesByParam("Id", returnedData.Id, null)[0];
+                            originalTreeNode.BirthDay = returnedData.BirthDay;
+                            originalTreeNode.BirthTime = returnedData.BirthTime;
+                            originalTreeNode.DeathDay = returnedData.DeathDay;
+                            originalTreeNode.DeathTime = returnedData.DeathTime;
+                            originalTreeNode.isParent = returnedData.isParent;
+                            originalTreeNode.name = returnedData.name;
+                            zTreeObj.updateNode(originalTreeNode);
+                            if (originalTreeNode.FatherId != returnedData.FatherId) {
+                                originalTreeNode.FatherId = returnedData.FatherId;
+                                zTreeObj.removeNode(originalTreeNode);
+                                var fatherNodes = zTreeObj.getNodesByParam("Id", returnedData.FatherId, null);
+                                if (fatherNodes != null) {
+                                    zTreeObj.expandNode(fatherNodes[0], true/*expand*/);
+                                    zTreeObj.addNodes(fatherNodes[0], originalTreeNode);
+                                } else {
+                                    zTreeObj.addNodes(null, originalTreeNode);
+                                }
+                                zTreeObj.selectNode(originalTreeNode);
+                            }
+                            zTreeOnClick(null, "treeDemo", originalTreeNode);
                         },
                         failure: function (response) {
                             alert(response);
