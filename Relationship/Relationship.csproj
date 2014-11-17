@@ -131,7 +131,9 @@
     <Content Include="CSS\relationship.css" />
     <Content Include="Global.asax" />
     <Content Include="Images\background.jpg" />
+    <Content Include="Images\female.GIF" />
     <Content Include="Images\logo.png" />
+    <Content Include="Images\male.gif" />
     <Content Include="index.html" />
     <EntityDeploy Include="Model_2014-10-28.edmx">
       <Generator>EntityModelCodeGenerator</Generator>

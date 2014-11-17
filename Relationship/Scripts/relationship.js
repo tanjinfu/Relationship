@@ -124,28 +124,31 @@ function editPersonClick() {
                         data: data,
                         success: function (returnedData) {
                             $("#editPersonDialog").dialog("close");
-                            responseDataToTreeNode(returnedData);
-                            var originalTreeNode = zTreeObj.getNodesByParam("Id", returnedData.Id, null)[0];
-                            originalTreeNode.BirthDay = returnedData.BirthDay;
-                            originalTreeNode.BirthTime = returnedData.BirthTime;
-                            originalTreeNode.DeathDay = returnedData.DeathDay;
-                            originalTreeNode.DeathTime = returnedData.DeathTime;
-                            originalTreeNode.isParent = returnedData.isParent;
-                            originalTreeNode.name = returnedData.name;
-                            zTreeObj.updateNode(originalTreeNode);
-                            if (originalTreeNode.FatherId != returnedData.FatherId) {
-                                originalTreeNode.FatherId = returnedData.FatherId;
-                                zTreeObj.removeNode(originalTreeNode);
-                                var fatherNodes = zTreeObj.getNodesByParam("Id", returnedData.FatherId, null);
+                            var newNavigationNode = responseDataToTreeNode(returnedData);
+                            var originalNavigationNode = zTreeObj.getNodesByParam("Id", newNavigationNode.Id, null)[0];
+                            originalNavigationNode.BirthDay = newNavigationNode.BirthDay;
+                            originalNavigationNode.BirthTime = newNavigationNode.BirthTime;
+                            originalNavigationNode.DeathDay = newNavigationNode.DeathDay;
+                            originalNavigationNode.DeathTime = newNavigationNode.DeathTime;
+                            originalNavigationNode.Gender = newNavigationNode.Gender;
+                            originalNavigationNode.icon = newNavigationNode.icon;
+                            originalNavigationNode.isParent = newNavigationNode.isParent;
+                            originalNavigationNode.name = newNavigationNode.name;
+                            zTreeObj.updateNode(originalNavigationNode);
+                            if (originalNavigationNode.FatherId != newNavigationNode.FatherId) {
+                                originalNavigationNode.FatherId = newNavigationNode.FatherId;
+                                zTreeObj.removeNode(originalNavigationNode);
+                                var fatherNodes = zTreeObj.getNodesByParam("Id", newNavigationNode.FatherId, null);
                                 if (fatherNodes != null) {
                                     zTreeObj.expandNode(fatherNodes[0], true/*expand*/);
-                                    zTreeObj.addNodes(fatherNodes[0], originalTreeNode);
+                                    zTreeObj.addNodes(fatherNodes[0], originalNavigationNode);
                                 } else {
-                                    zTreeObj.addNodes(null, originalTreeNode);
+                                    zTreeObj.addNodes(null, originalNavigationNode);
                                 }
-                                zTreeObj.selectNode(originalTreeNode);
+                                zTreeObj.selectNode(originalNavigationNode);
                             }
-                            zTreeOnClick(null, "treeDemo", originalTreeNode);
+                            zTreeObj.updateNode(originalNavigationNode);
+                            zTreeOnClick(null, "treeDemo", originalNavigationNode);
                         },
                         failure: function (response) {
                             alert(response);
@@ -189,7 +192,6 @@ function deletePersonClick() {
                                     var childNode = childrenNodes[i];
                                     childNode.FatherId = null;
                                     childNode.Father = null;
-                                    zTreeObj.updateNode(childNode);
                                     zTreeObj.removeNode(childNode);
                                     zTreeObj.addNodes(null, childNode);
                                 }
@@ -236,7 +238,7 @@ function drawDecendantDiagramClick() {
 
     var id = viewModel.viewPerson().id();
     $.ajax({
-        headers:requestHeaders,
+        headers: requestHeaders,
         type: "GET",
         url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
         success: function (returnedData) {
@@ -698,7 +700,12 @@ var zTreeSettings = {
 };
 
 function responseDataToTreeNode(responseData) {
-    responseData.isParent = responseData.Gender == 1;
+    if (responseData.Gender == 1) {
+        responseData.isParent = responseData.Gender == 1;
+        responseData.icon = './Images/male.gif';
+    } else {
+        responseData.icon = './Images/female.gif';
+    }
     responseData.name = responseData.LastName + responseData.FirstName + "-" + responseData.Id;
     return responseData;
 }
