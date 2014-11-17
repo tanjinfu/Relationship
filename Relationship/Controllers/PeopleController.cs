@@ -12,6 +12,7 @@ using System.Web.OData;
 using System.Web.OData.Routing;
 using Relationship;
 using Microsoft.AspNet.Identity;
+using System.Text;
 
 namespace Relationship.Controllers
 {
@@ -64,6 +65,38 @@ namespace Relationship.Controllers
             {
                 return BadRequest("人员不存在：" + key);
             }
+            if (person.FatherId != null && person.FatherId != originalPerson.FatherId)
+            {
+                Person father = db.Person.SingleOrDefault(p => p.Id == person.FatherId);
+                if (father == null)
+                {
+                    return BadRequest("不存在编号为'" + person.FatherId + "'的人员，请检查。");
+                }
+                if (father.Gender == 0)
+                {
+                    return BadRequest("父亲必须是男性！");
+                }
+            }
+            if (person.MotherId != null && person.MotherId != originalPerson.MotherId)
+            {
+                Person mother = db.Person.SingleOrDefault(p => p.Id == person.MotherId);
+                if (mother == null)
+                {
+                    return BadRequest("不存在编号为'" + person.MotherId + "'的人员，请检查。");
+                }
+                if (mother.Gender == 1)
+                {
+                    return BadRequest("母亲必须是女性！");
+                }
+            }
+            try
+            {
+                checkCircle(person);
+            }
+            catch (RelationsipException e)
+            {
+                return BadRequest(e.Message);
+            }
             originalPerson.BirthDay = person.BirthDay;
             originalPerson.BirthTime = person.BirthTime;
             originalPerson.DeathDay = person.DeathDay;
@@ -104,6 +137,24 @@ namespace Relationship.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            if (person.FatherId != null)
+            {
+                Person father = db.Person.SingleOrDefault(p => p.Id == person.FatherId);
+                if (father.Gender == 0)
+                {
+                    return BadRequest("父亲必须是男性！");
+                }
+            }
+            if (person.MotherId != null)
+            {
+                Person father = db.Person.SingleOrDefault(p => p.Id == person.MotherId);
+                if (father.Gender == 1)
+                {
+                    return BadRequest("母亲必须是女性！");
+                }
+            }
+
             string userId = User.Identity.GetUserId();
             DateTime now = DateTime.Now;
             person.CreatedBy = userId;
@@ -259,6 +310,69 @@ namespace Relationship.Controllers
         private bool PersonExists(long key)
         {
             return db.Person.Count(e => e.Id == key) > 0;
+        }
+
+        private void checkCircle(Person person)
+        {
+            Stack<CircleFrame> stack = new Stack<CircleFrame>();
+            CircleFrame root = new CircleFrame() { Id = person.Id, firstName = person.FirstName, lastName = person.LastName };
+            stack.Push(root);
+            checkCircle(person.FatherId, person.Id, stack);
+            checkCircle(person.MotherId, person.Id, stack);
+        }
+
+        private void checkCircle(long? currentPersonId, long rootPersonId, Stack<CircleFrame> stack)
+        {
+            if (currentPersonId == null)
+            {
+                return;
+            }
+            if (rootPersonId == currentPersonId.Value)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("存在循环：");
+                CircleFrame circleFrame = null;
+                for (int i = stack.Count - 1; i >= 0; i--)
+                {
+                    circleFrame = stack.ElementAt(i);
+                    stringBuilder.Append(circleFrame.lastName);
+                    stringBuilder.Append(circleFrame.firstName);
+                    stringBuilder.Append("->");
+                }
+                circleFrame = stack.ElementAt(stack.Count - 1);
+                stringBuilder.Append(circleFrame.lastName);
+                stringBuilder.Append(circleFrame.firstName);
+
+                throw new RelationsipException(stringBuilder.ToString());
+            }
+            Person currentPerson = db.Person.SingleOrDefault(p => p.Id == currentPersonId.Value);
+            if (currentPerson == null)
+            {
+                throw new RelationsipException(string.Format("不存丰ID为{0}的人员，请检查。", currentPersonId));
+            }
+            CircleFrame currentCheckCircle = new CircleFrame()
+            {
+                Id = currentPerson.Id,
+                firstName = currentPerson.FirstName,
+                lastName = currentPerson.LastName
+            };
+
+            stack.Push(currentCheckCircle);
+            checkCircle(currentPerson.MotherId, rootPersonId, stack);
+            checkCircle(currentPerson.FatherId, rootPersonId, stack);
+            stack.Pop();
+        }
+
+        private class CircleFrame
+        {
+            public long Id;
+            public string firstName;
+            public string lastName;
+        }
+
+        private class RelationsipException : Exception
+        {
+            public RelationsipException(string message) : base(message) { }
         }
     }
 }

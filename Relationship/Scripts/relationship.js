@@ -41,6 +41,7 @@ function addPersonClick() {
     newClientPerson.deathTime("23:59");
     newClientPerson.gender(1);
     newClientPerson.orderInChildrenOfParents(1);
+    newClientPerson.errorMessage('');
     viewModel.editPerson(newClientPerson);
     $("#editPersonDialog").dialog({
         autoOpen: false,
@@ -74,9 +75,9 @@ function addPersonClick() {
                             zTreeOnClick(null, "treeDemo", newNode);
                         },
                         failure: function (response) {
-                            alert(response);
+                            showErrorMessage(response);
                         }
-                    });
+                    }).fail(showErrorMessage);
                 }
             }],
         modal: true,
@@ -99,6 +100,7 @@ function editPersonClick() {
     viewModel.editPerson().birthTime(viewModel.viewPerson().birthTime());
     viewModel.editPerson().deathDay(viewModel.viewPerson().deathDay());
     viewModel.editPerson().deathTime(viewModel.viewPerson().deathTime());
+    viewModel.editPerson().errorMessage('');
     viewModel.editPerson().fatherId(viewModel.viewPerson().fatherId());
     viewModel.editPerson().firstName(viewModel.viewPerson().firstName());
     viewModel.editPerson().gender(viewModel.viewPerson().gender());
@@ -153,7 +155,7 @@ function editPersonClick() {
                         failure: function (response) {
                             alert(response);
                         }
-                    });
+                    }).fail(showErrorMessage);
                 }
             }],
         modal: true,
@@ -208,9 +210,9 @@ function deletePersonClick() {
                         }
                     },
                     failure: function (response) {
-                        alert(response);
+                        viewModel.errorMessage(response);
                     }
-                });
+                }).fail(viewModel.errorMessage(response));
             },
             "取消": function () {
                 $("#dialog-confirm").dialog("close");
@@ -258,6 +260,8 @@ function drawDecendantDiagramClick() {
         failure: function (response) {
             alert(response);
         }
+    }).fail(function (response) {
+        alert(response);
     });
 };
 
@@ -481,6 +485,8 @@ function ClientPerson(serverPerson) {
     self.orderInChildrenOfParents = ko.observable();
     self.remark = ko.observable();
 
+    self.errorMessage = ko.observable();
+
     self.formattedGender = ko.dependentObservable(function () {
         return self.gender() == 1 ? "男" : "女";
     }.bind(self));
@@ -675,6 +681,17 @@ function ServerPerson(clientPerson) {
     }
 }
 
+function showErrorMessage(response) {
+    var message = response.status + ': ' + response.statusText + '. ';
+    //{
+    //    "error":{
+    //        "code":"","message":"\u7236\u4eb2\u5fc5\u987b\u662f\u7537\u6027\uff01"
+    //    }
+    //}
+    message += $.parseJSON(response.responseText).error.message;
+    viewModel.editPerson().errorMessage(message);
+}
+
 var defaultServerPerson = new ServerPerson();
 
 var viewModel = {
@@ -766,6 +783,8 @@ function zTreeOnExpand(event, treeId, treeNode) {
             failure: function (response) {
                 alert(response);
             }
+        }).fail(function (response) {
+            alert(response)
         });
     }
     else {
@@ -791,6 +810,8 @@ function zTreeOnClick(event, treeId, treeNode) {
             failure: function (response) {
                 alert(response);
             }
+        }).fail(function (response) {
+            alert(response)
         });
     }
     else {
@@ -837,6 +858,8 @@ function loadRootNavigationNodes(headers) {
         failure: function (response) {
             alert(response);
         }
+    }).fail(function (response) {
+        alert(response)
     });
 }
 

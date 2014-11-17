@@ -117,64 +117,67 @@
         </table>
     </div>
     <!--This table is for editting. -->
-    <table id="editPersonDialog" style="display: none; vertical-align: top" title="编辑">
-        <thead>
-            <tr>
-                <th style="width: 80px"></th>
-                <th style="width: 180px"></th>
-                <th style="width: 40px"></th>
-                <th style="width: 180px"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="item-name">姓：</td>
-                <td><input type="text" data-bind="value: editPerson().lastName" /></td>
-                <td class="item-name">名：</td>
-                <td><input type="text" data-bind="value: editPerson().firstName"></td>
-            </tr>
-            <tr>
-                <td class="item-name">性别：</td>
-                <td><input type="text" data-bind="value: editPerson().gender"></td>
-                <td colspan="2">1-男，0-女</td>
-            </tr>
-            <tr>
-                <td class="item-name">排行：</td>
-                <td><input type="text" data-bind="value: editPerson().orderInChildrenOfParents"></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="item-name">出生日期：</td>
-                <td><input type="text" data-bind="value: editPerson().birthDay"></td>
-                <td colspan="2">"0:0221-01-01"-公元前221年1月1日;<br />"1:2014-10-31"-2014年10月31日</td>
-            </tr>
-            <tr>
-                <td class="item-name">时间：</td>
-                <td colspan="3"><input type="text" data-bind="value: editPerson().birthTime"></td>
-            </tr>
-            <tr>
-                <td class="item-name">逝世日期：</td>
-                <td><input type="text" data-bind="value: editPerson().deathDay"></td>
-                <td class="item-name">时间：</td>
-                <td><input type="text" data-bind="value: editPerson().deathTime"></td>
-            </tr>
-            <tr>
-                <td class="item-name">父亲编号：</td>
-                <td><input type="text" data-bind="value: editPerson().fatherId" /></td>
-                <td colspan="2">如果系统中尚未录入父亲信息请保持此项为空。</td>
-            </tr>
-            <tr>
-                <td class="item-name">母亲编号：</td>
-                <td><input type="text" data-bind="value: editPerson().motherId" /></td>
-                <td colspan="2">如果系统中尚未录入母亲信息请保持此项为空。</td>
-            </tr>
-            <tr>
-                <td class="item-name">备注：</td>
-                <td colspan="3"><textarea data-bind="value: editPerson().remark" style="width: 99%"></textarea></td>
-            </tr>
-        </tbody>
-    </table>
+    <div id="editPersonDialog" style="display: none;">
+        <table style="vertical-align: top" title="编辑">
+            <thead>
+                <tr>
+                    <th style="width: 80px"></th>
+                    <th style="width: 180px"></th>
+                    <th style="width: 40px"></th>
+                    <th style="width: 180px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item-name">姓：</td>
+                    <td><input type="text" data-bind="value: editPerson().lastName" /></td>
+                    <td class="item-name">名：</td>
+                    <td><input type="text" data-bind="value: editPerson().firstName"></td>
+                </tr>
+                <tr>
+                    <td class="item-name">性别：</td>
+                    <td><input type="text" data-bind="value: editPerson().gender"></td>
+                    <td colspan="2">1-男，0-女</td>
+                </tr>
+                <tr>
+                    <td class="item-name">排行：</td>
+                    <td><input type="text" data-bind="value: editPerson().orderInChildrenOfParents"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="item-name">出生日期：</td>
+                    <td><input type="text" data-bind="value: editPerson().birthDay"></td>
+                    <td colspan="2">"0:0221-01-01"-公元前221年1月1日;<br />"1:2014-10-31"-2014年10月31日</td>
+                </tr>
+                <tr>
+                    <td class="item-name">时间：</td>
+                    <td colspan="3"><input type="text" data-bind="value: editPerson().birthTime"></td>
+                </tr>
+                <tr>
+                    <td class="item-name">逝世日期：</td>
+                    <td><input type="text" data-bind="value: editPerson().deathDay"></td>
+                    <td class="item-name">时间：</td>
+                    <td><input type="text" data-bind="value: editPerson().deathTime"></td>
+                </tr>
+                <tr>
+                    <td class="item-name">父亲编号：</td>
+                    <td><input type="text" data-bind="value: editPerson().fatherId" /></td>
+                    <td colspan="2">如果系统中尚未录入父亲信息请保持此项为空。</td>
+                </tr>
+                <tr>
+                    <td class="item-name">母亲编号：</td>
+                    <td><input type="text" data-bind="value: editPerson().motherId" /></td>
+                    <td colspan="2">如果系统中尚未录入母亲信息请保持此项为空。</td>
+                </tr>
+                <tr>
+                    <td class="item-name">备注：</td>
+                    <td colspan="3"><textarea data-bind="value: editPerson().remark" style="width: 99%"></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+        <span style="color:red;" data-bind="text:editPerson().errorMessage"></span>
+    </div>
     <div id="dialog-confirm" style="display: none; " title=" 删除选中人员？">
         <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>确实要删除此人的信息吗？</p>
     </div>
