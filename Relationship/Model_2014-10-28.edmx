@@ -34,11 +34,11 @@
           <Property Name="DeathDay" Type="char" MaxLength="12" />
           <Property Name="DeathTime" Type="char" MaxLength="8" />
           <Property Name="Remark" Type="nvarchar" MaxLength="400" />
-          <Property Name="InsertedBy" Type="bigint" Nullable="false" />
-          <Property Name="InsertedTime" Type="datetime" Nullable="false" />
-          <Property Name="UpdatedBy" Type="bigint" Nullable="false" />
-          <Property Name="UpdatedTime" Type="datetime" Nullable="false" />
           <Property Name="OrderInChildrenOfParents" Type="int" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="128" />
+          <Property Name="LastModifiedBy" Type="nvarchar" MaxLength="128" />
+          <Property Name="CreatedTime" Type="datetime" />
+          <Property Name="LastModifiedTime" Type="datetime" />
         </EntityType>
         <Association Name="FK_Father">
           <End Role="Person" Type="Self.Person" Multiplicity="0..1" />
@@ -109,15 +109,15 @@
           <Property Name="DeathDay" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
           <Property Name="DeathTime" Type="String" MaxLength="8" FixedLength="true" Unicode="false" />
           <Property Name="Remark" Type="String" MaxLength="400" FixedLength="false" Unicode="true" />
-          <Property Name="InsertedBy" Type="Int64" Nullable="false" />
-          <Property Name="InsertedTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="UpdatedBy" Type="Int64" Nullable="false" />
-          <Property Name="UpdatedTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="ChildrenByFather" Relationship="Self.FK_Father" FromRole="Person" ToRole="Person1" />
           <NavigationProperty Name="Father" Relationship="Self.FK_Father" FromRole="Person1" ToRole="Person" />
           <NavigationProperty Name="ChildrenByMother" Relationship="Self.FK_Mother" FromRole="Person" ToRole="Person1" />
           <NavigationProperty Name="Mother" Relationship="Self.FK_Mother" FromRole="Person1" ToRole="Person" />
           <Property Name="OrderInChildrenOfParents" Type="Int32" />
+          <Property Name="CreatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="LastModifiedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedTime" Type="DateTime" Precision="3" />
+          <Property Name="LastModifiedTime" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Father">
           <End Role="Person" Type="Self.Person" Multiplicity="0..1" />
@@ -179,6 +179,10 @@
           <EntitySetMapping Name="Person">
             <EntityTypeMapping TypeName="relationshipModel.Person">
               <MappingFragment StoreEntitySet="Person">
+                <ScalarProperty Name="LastModifiedTime" ColumnName="LastModifiedTime" />
+                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="OrderInChildrenOfParents" ColumnName="OrderInChildrenOfParents" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
@@ -191,11 +195,7 @@
                 <ScalarProperty Name="DeathDay" ColumnName="DeathDay" />
                 <ScalarProperty Name="DeathTime" ColumnName="DeathTime" />
                 <ScalarProperty Name="Remark" ColumnName="Remark" />
-                <ScalarProperty Name="InsertedBy" ColumnName="InsertedBy" />
-                <ScalarProperty Name="InsertedTime" ColumnName="InsertedTime" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
-              </MappingFragment>
+                </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
         </EntityContainerMapping>

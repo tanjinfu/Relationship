@@ -31,11 +31,11 @@ namespace Relationship
         public string DeathDay { get; set; }
         public string DeathTime { get; set; }
         public string Remark { get; set; }
-        public long InsertedBy { get; set; }
-        public System.DateTime InsertedTime { get; set; }
-        public long UpdatedBy { get; set; }
-        public System.DateTime UpdatedTime { get; set; }
         public Nullable<int> OrderInChildrenOfParents { get; set; }
+        public string CreatedBy { get; set; }
+        public string LastModifiedBy { get; set; }
+        public Nullable<System.DateTime> CreatedTime { get; set; }
+        public Nullable<System.DateTime> LastModifiedTime { get; set; }
     
         public virtual ICollection<Person> ChildrenByFather { get; set; }
         public virtual Person Father { get; set; }

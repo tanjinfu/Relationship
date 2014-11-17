@@ -11,6 +11,7 @@ using System.Web.Http.ModelBinding;
 using System.Web.OData;
 using System.Web.OData.Routing;
 using Relationship;
+using Microsoft.AspNet.Identity;
 
 namespace Relationship.Controllers
 {
@@ -24,6 +25,7 @@ namespace Relationship.Controllers
     builder.EntitySet<Account>("Account"); 
     config.Routes.MapODataRoute("odata", "odata", builder.GetEdmModel());
     */
+    [Authorize]
     public class PeopleController : ODataController
     {
         private relationshipEntities_20141028 db = new relationshipEntities_20141028();
@@ -32,14 +34,16 @@ namespace Relationship.Controllers
         [EnableQuery]
         public IQueryable<Person> GetPeople()
         {
-            return db.Person;
+            string userId = User.Identity.GetUserId();
+            return db.Person.Where(p => p.CreatedBy == userId);
         }
 
         // GET odata/People(5)
         [EnableQuery(MaxExpansionDepth = 9)]
         public SingleResult<Person> Get([FromODataUri] long key)
         {
-            return SingleResult.Create(db.Person.Where(person => person.Id == key));
+            string userId = User.Identity.GetUserId();
+            return SingleResult.Create(db.Person.Where(p => p.Id == key && p.CreatedBy == userId));
         }
 
         // PUT odata/People(5)
@@ -54,7 +58,8 @@ namespace Relationship.Controllers
             {
                 return BadRequest();
             }
-            Person originalPerson = db.Person.SingleOrDefault(p => p.Id == key);
+            string userId = User.Identity.GetUserId();
+            Person originalPerson = db.Person.SingleOrDefault(p => p.Id == key && p.CreatedBy == userId);
             if (originalPerson == null)
             {
                 return BadRequest("人员不存在：" + key);
@@ -69,7 +74,9 @@ namespace Relationship.Controllers
             originalPerson.LastName = person.LastName;
             originalPerson.MotherId = person.MotherId;
             originalPerson.OrderInChildrenOfParents = person.OrderInChildrenOfParents;
-            originalPerson.Remark = person.Remark; ;
+            originalPerson.Remark = person.Remark;
+            originalPerson.LastModifiedBy = User.Identity.GetUserId();
+            originalPerson.LastModifiedTime = DateTime.Now;
             //TODO: check circle.
             try
             {
@@ -97,11 +104,14 @@ namespace Relationship.Controllers
             {
                 return BadRequest(ModelState);
             }
+            string userId = User.Identity.GetUserId();
             DateTime now = DateTime.Now;
-            person.InsertedBy = -1;
-            person.InsertedTime = now;
-            person.UpdatedBy = -1;
-            person.UpdatedTime = now;
+            person.CreatedBy = userId;
+            person.CreatedTime = now;
+            person.LastModifiedBy = userId;
+            person.LastModifiedTime = now;
+            person.CreatedBy =
+            person.LastModifiedBy = User.Identity.GetUserId();
 
             db.Person.Add(person);
             try
@@ -162,7 +172,8 @@ namespace Relationship.Controllers
         // DELETE odata/People(5)
         public IHttpActionResult Delete([FromODataUri] long key)
         {
-            Person person = db.Person.Find(key);
+            string userId = User.Identity.GetUserId();
+            Person person = db.Person.SingleOrDefault(p => p.Id == key && p.CreatedBy == userId);
             if (person == null)
             {
                 return NotFound();
@@ -201,28 +212,32 @@ namespace Relationship.Controllers
         [EnableQuery]
         public IQueryable<Person> GetChildrenByFather([FromODataUri] long key)
         {
-            return db.Person.Where(m => m.Id == key).SelectMany(m => m.ChildrenByFather);
+            string userId = User.Identity.GetUserId();
+            return db.Person.Where(m => m.Id == key && m.CreatedBy == userId).SelectMany(m => m.ChildrenByFather);
         }
 
         // GET odata/People(5)/Father
         [EnableQuery]
         public SingleResult<Person> GetFather([FromODataUri] long key)
         {
-            return SingleResult.Create(db.Person.Where(m => m.Id == key).Select(m => m.Father));
+            string userId = User.Identity.GetUserId();
+            return SingleResult.Create(db.Person.Where(m => m.Id == key && m.CreatedBy == userId).Select(m => m.Father));
         }
 
         // GET odata/People(5)/ChildernByMother
         [EnableQuery]
         public IQueryable<Person> GetChildernByMother([FromODataUri] long key)
         {
-            return db.Person.Where(m => m.Id == key).SelectMany(m => m.ChildrenByMother);
+            string userId = User.Identity.GetUserId();
+            return db.Person.Where(m => m.Id == key && m.CreatedBy == userId).SelectMany(m => m.ChildrenByMother);
         }
 
         // GET odata/People(5)/Mother
         [EnableQuery]
         public SingleResult<Person> GetMother([FromODataUri] long key)
         {
-            return SingleResult.Create(db.Person.Where(m => m.Id == key).Select(m => m.Mother));
+            string userId = User.Identity.GetUserId();
+            return SingleResult.Create(db.Person.Where(m => m.Id == key && m.CreatedBy == userId).Select(m => m.Mother));
         }
 
         [ODataRoute("GetRootPersons()")]

@@ -5,6 +5,7 @@
     <title></title>
     <link rel="stylesheet" href="./Scripts/zTree_v3/css/zTreeStyle/zTreeStyle.css" />
     <link rel="stylesheet" href="./Scripts/jquery-ui-1.11.2.custom/jquery-ui.css">
+    <link rel="stylesheet" href="./CSS/relationship.css">
     <script type="text/javascript" src="./Scripts/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="./Scripts/jquery-ui-1.11.2.custom/jquery-ui.js"></script>
     <script type="text/javascript" src="./Scripts/zTree_v3/js/jquery.ztree.core-3.5.js"></script>
@@ -24,10 +25,14 @@
                 <tr>
                     <td><img src="./Images/logo.png" style="width:80px;height:100px" /></td>
                     <td style="color: red; font-family: 楷体; font-size: 30px; vertical-align: central; ">关系网，搞清关系的地方。</td>
+                    <td>
+                        <div id="signInfo" data-bind="visible:signInfo().userName()!=''">
+                            欢迎你，<span data-bind="text:signInfo().userName()"></span>
+                            <a href="#" data-bind="click:signInfo().signOut">退出</a>
+                        </div>
+                    </td>
                 </tr>
             </table>
-
-
         </div>
         <div>
             <p data-bind="visible: errorMessage"><span data-bind="text: errorMessage"></span></p>
@@ -175,6 +180,65 @@
     </div>
     <div id="dialog-diagram" style="display: none; " title=" 后代图">
         <canvas id="diagram">你的浏览器不支持canvas.</canvas>
+    </div>
+    <div id="dialog-signIn" style="display:none">
+        <table>
+            <tr>
+                <td style="vertical-align:top;">
+                    <h3>登录</h3>
+                    <hr />
+                    <div class="form-group">
+                        <label for="LoginUserName" class="col-md-2 control-label">用户名：</label>
+                        <div class="col-md-10">
+                            <input type="text" id="LoginEmail" class="form-control" data-bind="value: signInfo().loginUserName, hasFocus: true" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="LoginPassword" class="col-md-2 control-label">密码：</label>
+                        <div class="col-md-10">
+                            <input type="password" id="LoginPassword" class="form-control" data-bind="value:signInfo().loginPassword" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button class="btn btn-default" data-bind="click: signInfo().signIn">登录</button>
+                        </div>
+                    </div>
+                </td>
+                <td style="width:5px;"></td>
+                <td style="vertical-align:top;">
+                    <h3>注册</h3>
+                    <hr />
+                    <div class="form-group">
+                        <label for="UserName" class="col-md-2 control-label">显示名：</label>
+                        <div class="col-md-10">
+                            <input class="form-control" id="UserName" type="text" data-bind="value: signInfo().registerUserName" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Email">邮箱：</label>
+                        <div class="col-md-10">
+                            <input class="form-control" id="Email" type="text" data-bind="value: signInfo().registerEmail" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="RegisterPassword">密码：</label><div class="col-md-10">
+                            <input class="form-control" id="RegisterPassword" type="password" data-bind="value: signInfo().registerPassword" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ConfirmPassword">确认密码：</label><div class="col-md-10">
+                            <input class="form-control" id="ConfirmPassword" type="password" data-bind="value: signInfo().confirmPassword" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button data-bind="click: signInfo().registerAccount">注册</button>
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+        <span style="color:red;" data-bind="text:signInfo().result"></span>
     </div>
     <script type="text/javascript" src="./Scripts/relationship.js"></script>
 </body>

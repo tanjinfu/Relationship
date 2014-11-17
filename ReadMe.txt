@@ -11,6 +11,10 @@ http://www.cnblogs.com/TomXu/archive/2011/11/21/2257154.html
 http://api.jqueryui.com/dialog/
 
 
+ Asp.net Identity:
+ http://www.cnblogs.com/jesse2013/p/3583308.html
+ http://www.cnblogs.com/jesse2013/p/aspnet-identity-claims-based-authentication-and-owin.html
+
 2014-10-29 Wednesday
 É¾³ý git submodule £¨git ¿â×ÓÄ£×é£©
 

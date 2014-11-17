@@ -15,3 +15,5 @@ _[Ss]cripts
 *.vsp
 *.psess
 *.orig
+*.mdf
+*.ldf

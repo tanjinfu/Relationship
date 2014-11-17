@@ -8,8 +8,32 @@ var diagramTopMarginInPixel = 10;
 var diagramLeftMarginInPixel = 10;
 var diagramBottomMarginInPixel = 10;
 var diagramRightMarginInPixel = 10;
+var tokenKey = 'accessToken';
+var userNameKey = 'userName';
+
+
+var settings = {
+    addExternalLoginUrl: "/api/Account/AddExternalLogin",
+    changePasswordUrl: "/api/Account/changePassword",
+    loginUrl: "/Token",
+    logoutUrl: "/api/Account/Logout",
+    registerUrl: "/api/Account/Register",
+    registerExternalUrl: "/api/Account/RegisterExternal",
+    removeLoginUrl: "/api/Account/RemoveLogin",
+    setPasswordUrl: "/api/Account/setPassword",
+    siteUrl: "/",
+    userInfoUrl: "/api/Account/UserInfo",
+}
 
 function addPersonClick() {
+    var accessToken = sessionStorage.getItem(tokenKey);
+    if (!accessToken) {
+        showSignInDialog();
+        return;
+    }
+    var requestHeaders = {};
+    requestHeaders.Authorization = 'Bearer ' + accessToken;
+
     var newClientPerson = new ClientPerson();
     newClientPerson.birthDay("1:0001-01-01");
     newClientPerson.birthTime("00:00");
@@ -29,6 +53,7 @@ function addPersonClick() {
                     var data = ko.toJSON(jsonData);
                     $.ajax({
                         type: "POST",
+                        headers: requestHeaders,
                         url: "/odata/People()",
                         contentType: "application/json; charset=utf-8",
                         data: data,
@@ -61,6 +86,14 @@ function addPersonClick() {
 };
 
 function editPersonClick() {
+    var accessToken = sessionStorage.getItem(tokenKey);
+    if (!accessToken) {
+        showSignInDialog();
+        return;
+    }
+    var requestHeaders = {};
+    requestHeaders.Authorization = 'Bearer ' + accessToken;
+
     viewModel.editPerson().birthDay(viewModel.viewPerson().birthDay());
     viewModel.editPerson().id(viewModel.viewPerson().id());
     viewModel.editPerson().birthTime(viewModel.viewPerson().birthTime());
@@ -85,6 +118,7 @@ function editPersonClick() {
                     var id = viewModel.editPerson().id();
                     $.ajax({
                         type: "PUT",
+                        headers: requestHeaders,
                         url: "/odata/People(" + id + ")",
                         contentType: "application/json; charset=utf-8",
                         data: data,
@@ -126,6 +160,14 @@ function editPersonClick() {
 };
 
 function deletePersonClick() {
+    var accessToken = sessionStorage.getItem(tokenKey);
+    if (!accessToken) {
+        showSignInDialog();
+        return;
+    }
+    var requestHeaders = {};
+    requestHeaders.Authorization = 'Bearer ' + accessToken;
+
     $("#dialog-confirm").dialog({
         resizable: false,
         height: 220,
@@ -134,6 +176,7 @@ function deletePersonClick() {
             "确定": function () {
                 var id = viewModel.viewPerson().id();
                 $.ajax({
+                    headers: requestHeaders,
                     type: "DELETE",
                     url: "/odata/People(" + id + ")",
                     success: function () {
@@ -182,8 +225,18 @@ function drawDecendantDiagramClick() {
         alert("请选择男性。");
         return;
     }
+
+    var accessToken = sessionStorage.getItem(tokenKey);
+    if (!accessToken) {
+        showSignInDialog();
+        return;
+    }
+    var requestHeaders = {};
+    requestHeaders.Authorization = 'Bearer ' + accessToken;
+
     var id = viewModel.viewPerson().id();
     $.ajax({
+        headers:requestHeaders,
         type: "GET",
         url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
         success: function (returnedData) {
@@ -357,7 +410,7 @@ function initDiagramData(serverData) {
     rootDiagramNode.y = 0;
     diagramData.nodes.push(rootDiagramNode);
 
-    var maxFullNameLenght = rootDiagramNode.fullName.length;
+    var maxFullNameLength = rootDiagramNode.fullName.length;
 
     var hashMap = {};
     hashMap[rootDiagramNode.id] = rootDiagramNode;
@@ -390,12 +443,12 @@ function initDiagramData(serverData) {
                 hashMap[childDiagramNode.id] = childDiagramNode;
             }
         }
-        if (parentDiagramNode.fullName.length > maxFullNameLenght) {
-            maxFullNameLenght = parentDiagramNode.fullName.length;
+        if (parentDiagramNode.fullName.length > maxFullNameLength) {
+            maxFullNameLength = parentDiagramNode.fullName.length;
         }
     }
 
-    var nodeHeight = maxFullNameLenght * charHeightInPixel;
+    var nodeHeight = maxFullNameLength * charHeightInPixel;
     diagramData.nodeHeight = nodeHeight;
     var maxLevel = nodes[nodes.length - 1].level;
 
@@ -480,6 +533,103 @@ function ClientPerson(serverPerson) {
     }
 }
 
+function SignInfo() {
+    var self = this;
+    self.result = ko.observable('');
+    self.userName = ko.observable('');
+
+    self.registerUserName = ko.observable("cao.xueqin");
+    self.registerEmail = ko.observable("cao.xueqin@gmail.com");
+    self.registerPassword = ko.observable("Password01!");
+    self.confirmPassword = ko.observable("Password01!");
+
+    self.loginUserName = ko.observable("cao.xueqin");
+    self.loginPassword = ko.observable("Password01!");
+
+    function showError(jqXHR) {
+        var message = jqXHR.status + ': ' + jqXHR.statusText + '. ';
+        //"{"Message":"The request is invalid.","ModelState":{"":["Name cao.xueqin is already taken.","Email 'cao.xueqin@gmail.com' is already taken."]}}"
+        var modelState = $.parseJSON(jqXHR.responseText).ModelState[''];
+        for (var i = 0; i < modelState.length; i++) {
+            message += " " + modelState[i];
+        }
+        self.result(message);
+    }
+
+    self.callApi = function () {
+        self.result('');
+
+        var token = sessionStorage.getItem(tokenKey);
+        var headers = {};
+        if (token) {
+            headers.Authorization = 'Bearer ' + token;
+        }
+
+        $.ajax({
+            type: 'GET',
+            url: '/api/values',
+            headers: headers
+        }).done(function (data) {
+            self.result(data);
+        }).fail(showError);
+    }
+
+    self.registerAccount = function () {
+        self.result('');
+
+        var data = {
+            Email: self.registerEmail(),
+            Password: self.registerPassword(),
+            ConfirmPassword: self.confirmPassword(),
+            UserName: self.registerUserName(),
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/Account/Register',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(data)
+        }).done(function (data) {
+            self.result("注册成功，请登录。");
+        }).fail(showError);
+    }
+
+    self.signIn = function () {
+        self.result('');
+
+        var loginData = {
+            grant_type: 'password',
+            username: self.loginUserName(),
+            password: self.loginPassword()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/Token',
+            data: loginData
+        }).done(function (data) {
+            self.userName(data.userName);
+            // Cache the access token in session storage.
+            sessionStorage.setItem(tokenKey, data.access_token);
+            sessionStorage.setItem(userNameKey, data.userName);
+            $("#dialog-signIn").dialog("close");
+            var header = {};
+            header.Authorization = 'Bearer ' + data.access_token;
+            var rootNavigationNodes = zTreeObj.getNodes();// get root nodes
+            if (rootNavigationNodes.length == 0) {
+                loadRootNavigationNodes(header);
+            }
+        }).fail(showError);
+    }
+
+    self.signOut = function () {
+        self.userName('');
+        sessionStorage.removeItem(tokenKey)
+        zTreeObj = $.fn.zTree.init($("#treeDemo"), zTreeSettings);
+        showSignInDialog();
+    }
+}
+
 function ServerPerson(clientPerson) {
     var self = this;
     self.BirthDay = '';
@@ -528,48 +678,117 @@ var defaultServerPerson = new ServerPerson();
 var viewModel = {
     viewPerson: ko.observable(new ClientPerson(defaultServerPerson)),
     editPerson: ko.observable(new ClientPerson(defaultServerPerson)),
+    signInfo: ko.observable(new SignInfo()),
     errorMessage: ko.observable(),
 };
 
 
 ko.applyBindings(viewModel); // Makes Knockout get to work
 
-var setting = {
-    async: {
-        enable: true,
-        url: getAsyncUrl,
-        autoParam: ["id", "name=n", "level=lv"],
-        type: "get",
-        dataFilter: filter
-    },
+var zTreeSettings = {
     callback: {
+        beforeClick: zTreeBeforeClick,
+        beforeExpand: zTreeBeforeExpand,
         onClick: zTreeOnClick,
+        onExpand: zTreeOnExpand,
     },
     view: {
         selectedMulti: false,
     }
 };
 
-function filter(treeId, parentNode, responseData) {
-    if (!responseData) return null;
-    for (var i = 0, l = responseData.value.length; i < l; i++) {
-        responseDataToTreeNode(responseData.value[i]);
-    }
-    return responseData.value;
-}
-
 function responseDataToTreeNode(responseData) {
     responseData.isParent = responseData.Gender == 1;
     responseData.name = responseData.LastName + responseData.FirstName + "-" + responseData.Id;
+    return responseData;
 }
+
+function zTreeBeforeClick(treeId, treeNode, clickFlag) {
+    var accessToken = sessionStorage.getItem(tokenKey);
+    if (accessToken) {
+        return true;
+    }
+    else {
+        showSignInDialog();
+        return false;
+    }
+};
+
+function zTreeBeforeExpand(treeId, treeNode) {
+    var accessToken = sessionStorage.getItem(tokenKey);
+    if (accessToken) {
+        return true;
+    }
+    else {
+        showSignInDialog();
+        return false;
+    }
+};
+
+function zTreeOnExpand(event, treeId, treeNode) {
+    if (treeNode.Gender == 0) {
+        return;
+    }
+    if (treeNode.children) {
+        // Prevent loading children twice.
+        return;
+    }
+    var accessToken = sessionStorage.getItem(tokenKey);
+    var requestHeaders = {};
+    if (accessToken) {
+        requestHeaders.Authorization = 'Bearer ' + accessToken;
+        $.ajax({
+            type: "GET",
+            headers: requestHeaders,
+            url: "/odata/People(" + treeNode.Id + ")?$select=Id&$expand=ChildrenByFather($select=Id,FirstName,Gender,LastName;$orderby=BirthDay,BirthTime)",
+            success: function (responseData) {
+                if (!responseData) return null;
+                var candidateNodes = zTreeObj.getNodesByParam("Id", responseData.Id, null)
+                if (candidateNodes == null) {
+                    alert("导航树中无此节点！");
+                } else {
+                    var fatherNode = candidateNodes[0];
+                    zTreeObj.expandNode(fatherNode, true, false, false);
+                    var childNode = null;
+                    for (var i = 0; i < responseData.ChildrenByFather.length; i++) {
+                        childNode = responseDataToTreeNode(responseData.ChildrenByFather[i]);
+                        zTreeObj.addNodes(fatherNode, childNode);
+                    }
+                }
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+    }
+    else {
+        showSignInDialog();
+    }
+
+};
 
 function zTreeOnClick(event, treeId, treeNode) {
     viewModel.errorMessage(null); // clear error message
-    viewModel.editPerson(new ClientPerson(defaultServerPerson));
-    $.get("odata/People(" + treeNode.Id + ")?$expand=Mother($select=Id,FirstName,LastName),Father($select=Id,FirstName,LastName),ChildrenByFather($select=Id,FirstName,LastName),ChildrenByMother($select=Id,FirstName,LastName)",
-        null,
-        updateViewModelOfPerson,
-        "json");
+    var accessToken = sessionStorage.getItem(tokenKey);
+    var requestHeaders = {};
+    requestHeaders.Authorization = 'Bearer ' + accessToken;
+    if (accessToken) {
+        viewModel.editPerson(new ClientPerson(defaultServerPerson));
+        $.ajax({
+            type: "GET",
+            headers: requestHeaders,
+            url: "odata/People(" + treeNode.Id + ")?$expand=Mother($select=Id,FirstName,LastName),Father($select=Id,FirstName,LastName),ChildrenByFather($select=Id,FirstName,LastName),ChildrenByMother($select=Id,FirstName,LastName)",
+            success: function (responseData) {
+                updateViewModelOfPerson(responseData);
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+    }
+    else {
+        showSignInDialog();
+    }
 };
 
 function updateViewModelOfPerson(result) {
@@ -582,6 +801,60 @@ function getAsyncUrl(treeId, treeNode) {
     return url;
 };
 
+function zTreeOnAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+    alert(XMLHttpRequest);
+};
+
+
+
+function loadRootNavigationNodes(headers) {
+    $.ajax({
+        type: "GET",
+        headers: headers,
+        url: "/odata/People?$select=Id,FirstName,Gender,LastName,FatherId&$orderby=BirthDay,BirthTime&$filter=FatherId eq null",
+        success: function (responseData) {
+            if (!responseData) return null;
+            var candidateNodes = zTreeObj.getNodesByParam("Id", responseData.Id, null)
+            if (candidateNodes == null) {
+                alert("导航树中无此节点！");
+            } else {
+                var fatherNode = candidateNodes[0];
+                zTreeObj.expandNode(fatherNode, true, false, false);
+                var childNode = null;
+                for (var i = 0; i < responseData.value.length; i++) {
+                    childNode = responseDataToTreeNode(responseData.value[i]);
+                    zTreeObj.addNodes(fatherNode, childNode);
+                }
+            }
+        },
+        failure: function (response) {
+            alert(response);
+        }
+    });
+}
+
+function showSignInDialog() {
+
+    $("#dialog-signIn").dialog({
+        autoOpen: false,
+        dialogClass: "no-close",
+        modal: true,
+        width: 500,
+    });
+    $("#dialog-signIn").dialog("open");
+}
+
 $(document).ready(function () {
-    zTreeObj = $.fn.zTree.init($("#treeDemo"), setting);
+    zTreeObj = $.fn.zTree.init($("#treeDemo"), zTreeSettings);
 });
+
+var token = sessionStorage.getItem(tokenKey);
+var headers = {};
+if (token) {
+    headers.Authorization = 'Bearer ' + token;
+    viewModel.signInfo().userName(sessionStorage.getItem(userNameKey));
+    loadRootNavigationNodes(headers);
+}
+else {
+    showSignInDialog();
+}
