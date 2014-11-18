@@ -41,7 +41,7 @@ function addPersonClick() {
     newClientPerson.deathTime("23:59");
     newClientPerson.gender(1);
     newClientPerson.orderInChildrenOfParents(1);
-    newClientPerson.errorMessage('');
+
     viewModel.editPerson(newClientPerson);
     $("#editPersonDialog").dialog({
         autoOpen: false,
@@ -50,6 +50,7 @@ function addPersonClick() {
                 text: "Ok",
                 click: function () {
                     viewModel.errorMessage(null);
+                    viewModel.editPersonErrorMessage('');
                     var jsonData = new ServerPerson(viewModel.editPerson());
                     var data = ko.toJSON(jsonData);
                     $.ajax({
@@ -77,7 +78,7 @@ function addPersonClick() {
                         failure: function (response) {
                             showErrorMessage(response);
                         }
-                    }).fail(showErrorMessage);
+                    }).fail(showEditPersonErrorMessage);
                 }
             }],
         modal: true,
@@ -100,7 +101,6 @@ function editPersonClick() {
     viewModel.editPerson().birthTime(viewModel.viewPerson().birthTime());
     viewModel.editPerson().deathDay(viewModel.viewPerson().deathDay());
     viewModel.editPerson().deathTime(viewModel.viewPerson().deathTime());
-    viewModel.editPerson().errorMessage('');
     viewModel.editPerson().fatherId(viewModel.viewPerson().fatherId());
     viewModel.editPerson().firstName(viewModel.viewPerson().firstName());
     viewModel.editPerson().gender(viewModel.viewPerson().gender());
@@ -114,7 +114,7 @@ function editPersonClick() {
             {
                 text: "Ok",
                 click: function () {
-                    viewModel.errorMessage(null);
+                    viewModel.editPersonErrorMessage('');
                     var jsonData = new ServerPerson(viewModel.editPerson());
                     var data = ko.toJSON(jsonData);
                     var id = viewModel.editPerson().id();
@@ -153,9 +153,9 @@ function editPersonClick() {
                             zTreeOnClick(null, "treeDemo", originalNavigationNode);
                         },
                         failure: function (response) {
-                            alert(response);
+                            showEditPersonErrorMessage(response);
                         }
-                    }).fail(showErrorMessage);
+                    }).fail(showEditPersonErrorMessage);
                 }
             }],
         modal: true,
@@ -210,9 +210,9 @@ function deletePersonClick() {
                         }
                     },
                     failure: function (response) {
-                        viewModel.errorMessage(response);
+                        viewModel.errorMessage(response, viewModel.errorMessage);
                     }
-                }).fail(viewModel.errorMessage(response));
+                }).fail(viewModel.errorMessage(response, viewModel.errorMessage));
             },
             "取消": function () {
                 $("#dialog-confirm").dialog("close");
@@ -226,7 +226,7 @@ function deletePersonClick() {
 function drawDecendantDiagramClick() {
     var gender = viewModel.viewPerson().gender();
     if (gender != null && gender == 0) {
-        alert("请选择男性。");
+        viewModel.errorMessage("请选择男性。");
         return;
     }
 
@@ -237,32 +237,37 @@ function drawDecendantDiagramClick() {
     }
     var requestHeaders = {};
     requestHeaders.Authorization = 'Bearer ' + accessToken;
-
+    $("#dialog-diagram").dialog({
+        resizable: true,
+        height: 600,
+        width: 800,
+        modal: true,
+    });
+    $("#dialog-diagram").dialog("open");
+    viewModel.drawDiagramErrorMessage('加载数据...');
     var id = viewModel.viewPerson().id();
     $.ajax({
         headers: requestHeaders,
         type: "GET",
         url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
         success: function (returnedData) {
-            $("#dialog-diagram").dialog({
-                resizable: true,
-                height: 600,
-                width: 800,
-                modal: true,
-            });
+            viewModel.drawDiagramErrorMessage('初始化...');
             var diagramData = initDiagramData(returnedData);
+
+            viewModel.drawDiagramErrorMessage('计算坐标...');
             calculatePosition(diagramData);
+
+            viewModel.drawDiagramErrorMessage('绘图...');
             //var c = $("#diagram");
             var c = document.getElementById("diagram");
             drawDiagram(c, diagramData);
-            $("#dialog-diagram").dialog("open");
+
+            viewModel.drawDiagramErrorMessage('');//完成
         },
         failure: function (response) {
-            alert(response);
+            showDrawDiagramErrorMessage(response);
         }
-    }).fail(function (response) {
-        alert(response);
-    });
+    }).fail(showDrawDiagramErrorMessage);
 };
 
 function DiagramNode() {
@@ -485,8 +490,6 @@ function ClientPerson(serverPerson) {
     self.orderInChildrenOfParents = ko.observable();
     self.remark = ko.observable();
 
-    self.errorMessage = ko.observable();
-
     self.formattedGender = ko.dependentObservable(function () {
         return self.gender() == 1 ? "男" : "女";
     }.bind(self));
@@ -681,6 +684,28 @@ function ServerPerson(clientPerson) {
     }
 }
 
+function showEditPersonErrorMessage(response) {
+    var message = response.status + ': ' + response.statusText + '. ';
+    //{
+    //    "error":{
+    //        "code":"","message":"\u7236\u4eb2\u5fc5\u987b\u662f\u7537\u6027\uff01"
+    //    }
+    //}
+    message += $.parseJSON(response.responseText).error.message;
+    viewModel.editPersonErrorMessage(message);
+}
+
+function showDrawDiagramErrorMessage(response) {
+    var message = response.status + ': ' + response.statusText + '. ';
+    //{
+    //    "error":{
+    //        "code":"","message":"\u7236\u4eb2\u5fc5\u987b\u662f\u7537\u6027\uff01"
+    //    }
+    //}
+    message += $.parseJSON(response.responseText).error.message;
+    viewModel.drawDiagramErrorMessage(message);
+}
+
 function showErrorMessage(response) {
     var message = response.status + ': ' + response.statusText + '. ';
     //{
@@ -689,7 +714,7 @@ function showErrorMessage(response) {
     //    }
     //}
     message += $.parseJSON(response.responseText).error.message;
-    viewModel.editPerson().errorMessage(message);
+    viewModel.errorMessage(message);
 }
 
 var defaultServerPerson = new ServerPerson();
@@ -699,6 +724,8 @@ var viewModel = {
     editPerson: ko.observable(new ClientPerson(defaultServerPerson)),
     signInfo: ko.observable(new SignInfo()),
     errorMessage: ko.observable(),
+    editPersonErrorMessage: ko.observable(),
+    drawDiagramErrorMessage: ko.observable(),
 };
 
 
@@ -783,9 +810,7 @@ function zTreeOnExpand(event, treeId, treeNode) {
             failure: function (response) {
                 alert(response);
             }
-        }).fail(function (response) {
-            alert(response)
-        });
+        }).fail(showErrorMessage);
     }
     else {
         showSignInDialog();
@@ -808,11 +833,9 @@ function zTreeOnClick(event, treeId, treeNode) {
                 updateViewModelOfPerson(responseData);
             },
             failure: function (response) {
-                alert(response);
+                showErrorMessage(response);
             }
-        }).fail(function (response) {
-            alert(response)
-        });
+        }).fail(showErrorMessage);
     }
     else {
         showSignInDialog();
@@ -858,9 +881,7 @@ function loadRootNavigationNodes(headers) {
         failure: function (response) {
             alert(response);
         }
-    }).fail(function (response) {
-        alert(response)
-    });
+    }).fail(showErrorMessage);
 }
 
 function showSignInDialog() {

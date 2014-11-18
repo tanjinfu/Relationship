@@ -176,13 +176,14 @@
                 </tr>
             </tbody>
         </table>
-        <span style="color:red;" data-bind="text:editPerson().errorMessage"></span>
+        <span style="color:red;" data-bind="text:editPersonErrorMessage"></span>
     </div>
     <div id="dialog-confirm" style="display: none; " title=" 删除选中人员？">
         <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>确实要删除此人的信息吗？</p>
     </div>
     <div id="dialog-diagram" style="display: none; " title=" 后代图">
         <canvas id="diagram">你的浏览器不支持canvas.</canvas>
+        <span style="color:red;" data-bind="text:drawDiagramErrorMessage"></span>
     </div>
     <div id="dialog-signIn" style="display:none">
         <table>
