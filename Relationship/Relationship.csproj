@@ -152,6 +152,7 @@
       <DependentUpon>Model_2014-10-28.edmx</DependentUpon>
       <LastGenOutput>Model_2014-10-28.cs</LastGenOutput>
     </Content>
+    <None Include="Properties\PublishProfiles\Local.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="LearnKnockout.html" />
     <Content Include="Scripts\jquery-1.9.1.js" />
