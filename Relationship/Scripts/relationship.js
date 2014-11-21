@@ -244,6 +244,10 @@ function drawDecendantDiagramClick() {
         modal: true,
     });
     $("#dialog-diagram").dialog("open");
+    var c = document.getElementById("diagram");
+    c.width = 0;
+    c.height = 0;
+
     viewModel.drawDiagramErrorMessage('加载数据...');
     var id = viewModel.viewPerson().id();
     $.ajax({
@@ -258,8 +262,7 @@ function drawDecendantDiagramClick() {
             calculatePosition(diagramData);
 
             viewModel.drawDiagramErrorMessage('绘图...');
-            //var c = $("#diagram");
-            var c = document.getElementById("diagram");
+
             drawDiagram(c, diagramData);
 
             viewModel.drawDiagramErrorMessage('');//完成
