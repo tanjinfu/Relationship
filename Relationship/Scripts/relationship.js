@@ -920,7 +920,11 @@ function SignInfo() {
             if (rootNavigationNodes.length == 0) {
                 loadRootNavigationNodes(header);
             }
-        }).fail(showError);
+        }).fail(function (response) {
+            // {"error":"invalid_grant","error_description":"The user name or password is incorrect."}
+            var description = $.parseJSON(response.responseText)['error_description'];
+            self.result(description);
+        });
     }
 
     self.signOut = function () {
