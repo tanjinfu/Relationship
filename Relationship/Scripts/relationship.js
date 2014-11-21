@@ -243,6 +243,7 @@ function drawDecendantDiagramClick() {
         width: 800,
         modal: true,
     });
+    document.getElementById("dialog-diagram").title = '后代图';
     $("#dialog-diagram").dialog("open");
     var c = document.getElementById("diagram");
     c.width = 0;
@@ -282,6 +283,7 @@ function drawAncestorDiagramClick() {
     }
     var requestHeaders = {};
     requestHeaders.Authorization = 'Bearer ' + accessToken;
+    document.getElementById("dialog-diagram").title = '祖先图';
     $("#dialog-diagram").dialog({
         resizable: true,
         height: 600,
@@ -299,7 +301,7 @@ function drawAncestorDiagramClick() {
     //var selectClause = "Id,LastName,FirstName,Gender";
     var expandClause = "$expand=Father($select=Id,LastName,FirstName,Gender),Mother($select=Id,LastName,FirstName,Gender)";
     for (var i = 1; i <= 3; i++) {
-        expandClause="$expand=Father($select=Id,LastName,FirstName,Gender;" + expandClause + "),Mother($select=Id,LastName,FirstName,Gender;"+expandClause+")";
+        expandClause = "$expand=Father($select=Id,LastName,FirstName,Gender;" + expandClause + "),Mother($select=Id,LastName,FirstName,Gender;" + expandClause + ")";
     }
     $.ajax({
         headers: requestHeaders,
