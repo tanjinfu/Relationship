@@ -331,12 +331,12 @@ function drawAncestorDiagramClick() {
 
 function DiagramNode() {
     var self = this;
+    self.children = [];
     self.fullName = '';
     self.gender = 1;//1 represents Male; 0 Female. Used to draw solid or dotted lines.
     self.id = 0;
     self.fatherId = null;
     self.motherId = null;
-    self.parentId = 0;
     self.level = 0;
     self.order = 0; // order in its siblings, used when calculate the coordinates of descendant diagram.
     self.treeWidth = 0;// the tree width, whose root node is the current node.
@@ -362,25 +362,30 @@ function drawDiagram(c, diagramData) {
         var ctx = c.getContext('2d');
         ctx.font = charWidthInPixel + "px sans-serif";
         ctx.clearRect(0, 0, c.width, c.height);
+
         var nodes = diagramData.nodes;
         var rootNode = nodes[0];
+
+        var queue = new Array();
+        queue.push(rootNode);
+
         var nodeHeight = diagramData.nodeHeight;
         var nodeWidth = diagramNodeWidthInPixel;
         drawRectangle(ctx, rootNode.x, rootNode.y, nodeWidth, nodeHeight, rootNode.gender == 0);
         drawString(ctx, rootNode.fullName, rootNode.x + ctx.lineWidth, rootNode.y + charHeightInPixel - 1, charHeightInPixel);
 
-        var hashMap = {};
-        for (var i = 0; i < nodes.length; i++) {
-            hashMap[nodes[i].id] = nodes[i];
-        }
-
-        for (var i = 1; i < nodes.length; i++) {
-            var currentNode = nodes[i];
+        var currentNode, childNode;
+        while (queue.length > 0) {
+            currentNode = queue.shift();
+            console.log(currentNode.fullName);
             drawRectangle(ctx, currentNode.x, currentNode.y, nodeWidth, nodeHeight, currentNode.gender == 0);
             drawString(ctx, currentNode.fullName, currentNode.x + ctx.lineWidth, currentNode.y + charHeightInPixel - 1, charHeightInPixel);
 
-            var parentNode = hashMap[currentNode.parentId];
-            drawPolyLine(ctx, parentNode.x + nodeWidth / 2, parentNode.y + nodeHeight, currentNode.x + nodeWidth / 2, currentNode.y);
+            for (var i = 0; i < currentNode.children.length; i++) {
+                childNode = currentNode.children[i];
+                drawPolyLine(ctx, currentNode.x + nodeWidth / 2, currentNode.y + nodeHeight, childNode.x + nodeWidth / 2, childNode.y);
+                queue.push(childNode);
+            }
         }
     } else {
         alert('请使用 Safari, Chrome 或IE8+.');
@@ -416,65 +421,92 @@ function drawStraightLine(context, beginX, beginY, endX, endY) {
 
 function calculatePosition(diagramData) {
     var nodes = diagramData.nodes;
-    var hashMap = {};
 
-    var rootNode = nodes[0];
-    rootNode.x = diagramLeftMarginInPixel;
-    rootNode.y = diagramTopMarginInPixel;
-    hashMap[rootNode.id] = rootNode;
-
-    var parentNode = null;
     var currentNode = null;
 
-    for (var i = 1; i < nodes.length; i++) {
+    // Calculate y
+    for (var i = 0; i < nodes.length; i++) {
         currentNode = nodes[i];
-        hashMap[currentNode.id] = currentNode;
-        parentNode = hashMap[currentNode.parentId];
-        currentNode.y = parentNode.y + diagramNodeVerticalDistanceInPixel + diagramData.nodeHeight;
+        currentNode.y = diagramTopMarginInPixel
+            + currentNode.level * (diagramData.nodeHeight + diagramNodeVerticalDistanceInPixel)
     }
 
-    var previousNode = null;
-    var tempNode = null;
-    var maxX = rootNode.x;
-    var iterationCount = 0;
-    var parentIsAltered = true;
+    // Calculate tree width
+    var rootNode = nodes[0];
+    calculateTreeWidthForDescendantDiagram(diagramData.idToNodeMap, rootNode, diagramNodeWidthInPixel, diagramNodeHorizentalDistanceInPixel);
+    diagramData.width = diagramLeftMarginInPixel + rootNode.treeWidth + diagramRightMarginInPixel;
+
+    // Calculate x
+    var queue = new Array();
+    rootNode.x = diagramLeftMarginInPixel;
+    queue.push(rootNode);
+
+    var currentDiagramNode = null;
+    var childDiagramNode = null;
+    var previousSibling = null;
+ 
     console.time("calculateXTimer");
-    while (parentIsAltered) {
-        iterationCount++;
-        parentIsAltered = false;
-        previousNode = rootNode;
-        for (var i = 1; i < nodes.length; i++) {
-            currentNode = nodes[i];
-            previousNode = nodes[i - 1];
-            parentNode = hashMap[currentNode.parentId];
+    while (queue.length > 0) {
+        currentDiagramNode = queue.shift();
+        if (currentDiagramNode.children.length == 0) {
+            continue;
+        }
+        var firstChild = currentDiagramNode.children[0];
+        firstChild.x = currentDiagramNode.x;
+        queue.push(firstChild);
 
-            if (currentNode.level == previousNode.level) {
-                var expectedX = Math.max(
-                    parentNode.x,
-                    previousNode.x + (diagramNodeWidthInPixel + diagramNodeHorizentalDistanceInPixel),
-                    currentNode.x);
-                currentNode.x = expectedX;
+        previousSibling = firstChild;
+        for (var i = 1; i < currentDiagramNode.children.length; i++) {
+            childDiagramNode = currentDiagramNode.children[i];
+            childDiagramNode.x = previousSibling.x + previousSibling.treeWidth + diagramNodeHorizentalDistanceInPixel;
+            previousSibling = childDiagramNode;
+            queue.push(childDiagramNode);
+        }
+    }
 
-                if (currentNode.parentId != previousNode.parentId && expectedX > parentNode.x) {
-                    parentIsAltered = true;
-
-                    tempNode = parentNode;
-                    while (tempNode.x == parentNode.x) {
-                        tempNode.x = expectedX;
-                        tempNode = hashMap[tempNode.parentId];
-                    }// while
-                }
-            } else {
-                currentNode.x = parentNode.x;
-            }
-            if (maxX < currentNode.x) {
-                maxX = currentNode.x;
-            }
-        }// for
-    }// while(parentIsAltered)
     console.timeEnd("calculateXTimer");
-    console.log("Iterates", iterationCount, "times.");
-    diagramData.width = maxX + diagramNodeWidthInPixel + diagramRightMarginInPixel;
+}
+
+function calculateTreeWidthForDescendantDiagram(map, rootDiagramNode, diagramNodeWidth, diagramNodeHorizontalDistance) {
+    if (rootDiagramNode.children.length == 0) {
+        rootDiagramNode.treeWidth = diagramNodeWidth;
+    } else {
+        rootDiagramNode.treeWidth = 0;
+        var childNode;
+        for (var i = 0; i < rootDiagramNode.children.length; i++) {
+            childNode = rootDiagramNode.children[i];
+            calculateTreeWidthForDescendantDiagram(map, childNode, diagramNodeWidth, diagramNodeHorizentalDistanceInPixel);
+            rootDiagramNode.treeWidth += childNode.treeWidth;
+        }
+        rootDiagramNode.treeWidth += diagramNodeHorizontalDistance * (rootDiagramNode.children.length - 1);
+    }
+}
+
+function calculateLevelForDescendantDiagram(rootDiagramNodeId, map) {
+    var maxLevel = 0, currentLevel;
+    var diagramNodes = new Array();
+    diagramNodes.push(map[rootDiagramNodeId]);
+    var currentNode = null;
+    var fatherNode = null;
+    var motherNode = null;
+
+    while (diagramNodes.length > 0) {
+        currentNode = diagramNodes.shift();
+        currentLevel = currentNode.level;
+
+        if (currentNode.fatherId) {
+            fatherNode = map[currentNode.fatherId];
+            fatherNode.level = Math.max(currentLevel + 1, fatherNode.level);
+            diagramNodes.push(fatherNode);
+        }
+        if (currentNode.motherId) {
+            motherNode = map[currentNode.motherId];
+            motherNode.level = Math.max(currentLevel + 1, motherNode.level);
+            diagramNodes.push(motherNode);
+        }
+        maxLevel = Math.max(currentLevel, maxLevel);
+    }
+    return maxLevel;
 }
 
 function initDiagramData(serverData) {
@@ -493,17 +525,15 @@ function initDiagramData(serverData) {
 
     var maxFullNameLength = rootDiagramNode.fullName.length;
 
-    var hashMap = {};
-    hashMap[rootDiagramNode.id] = rootDiagramNode;
-
     var serverNodes = new Array();
     serverNodes.push(serverData);
+    diagramData.idToNodeMap[rootDiagramNode.id] = rootDiagramNode;
 
     var nodes = diagramData.nodes;
 
     while (serverNodes.length > 0) {
         var parentServerNode = serverNodes.shift();
-        var parentDiagramNode = hashMap[parentServerNode.Id];
+        var parentDiagramNode = diagramData.idToNodeMap[parentServerNode.Id];
         if (parentServerNode.ChildrenByFather) {
             var childLevel = parentDiagramNode.level + 1;
             for (var j = 0; j < parentServerNode.ChildrenByFather.length; j++) {
@@ -516,12 +546,13 @@ function initDiagramData(serverData) {
                 childDiagramNode.fullName = childServerNode.LastName + childServerNode.FirstName;
                 childDiagramNode.gender = childServerNode.Gender;
                 childDiagramNode.id = childServerNode.Id;
-                childDiagramNode.parentId = parentDiagramNode.id;
+                childDiagramNode.fatherId = parentDiagramNode.id;
                 childDiagramNode.level = childLevel;
                 childDiagramNode.order = j;
                 nodes.push(childDiagramNode);
                 serverNodes.push(childServerNode);
-                hashMap[childDiagramNode.id] = childDiagramNode;
+                diagramData.idToNodeMap[childDiagramNode.id] = childDiagramNode;
+                parentDiagramNode.children.push(childDiagramNode);
             }
         }
         if (parentDiagramNode.fullName.length > maxFullNameLength) {

@@ -18,8 +18,7 @@ http://api.jqueryui.com/dialog/
  TODO:
 1. Add validation to 
 	edit person dialog box
-2. Change the way that calculate coordinates and draw descendants diagram(calculate tree width first instead of the coordinates directly).
-3. (optional) Add an unbound function to get the ancestors of a person. Currently, they are got by odata url, but the url cann't be too long, only 4 levels are allowed.
+2. (optional) Add an unbound function to get the ancestors of a person. Currently, they are got by odata url, but the url cann't be too long, only 4 levels are allowed.
 
 2014-10-29 Wednesday
 É¾³ý git submodule £¨git ¿â×ÓÄ£×é£©
