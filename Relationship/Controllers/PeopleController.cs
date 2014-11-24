@@ -322,8 +322,8 @@ namespace Relationship.Controllers
             IList<Person> childrenByFather = db.Person.Where(p => p.FatherId == person.Id).ToList();
             person.ChildrenByFather = childrenByFather
                 .OrderBy(p => p.BirthDay)
-                .OrderBy(p => p.BirthTime)
-                .OrderBy(p => p.OrderInChildrenOfParents)
+                .ThenBy(p => p.BirthTime)
+                .ThenBy(p => p.OrderInChildrenOfParents)
                 .ToList();
             foreach (Person child in childrenByFather.Where(p => p.Gender == 1))
             {
