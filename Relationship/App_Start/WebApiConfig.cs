@@ -47,8 +47,11 @@ namespace Relationship
             accountType.Ignore(a => a.LastModifyTime);
             accountType.Ignore(a => a.CreateTime);
 
-            FunctionConfiguration function=modelBuilder.Function("GetRootPersons");
-            function.ReturnsCollectionFromEntitySet<Person>("People");
+            FunctionConfiguration function = modelBuilder.Function("GetPersonAndDescendants");
+            function.ReturnsFromEntitySet<Person>("People");
+            function.Parameter<long>("Id");// The id of the root person.
+            function.Parameter<long>("TotalLevels");// How many levels will be loaded and the root person is included.
+            function.IsComposable=true;
 
             modelBuilder.Namespace = typeof(Person).Namespace;
             return modelBuilder.GetEdmModel();

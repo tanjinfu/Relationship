@@ -254,7 +254,9 @@ function drawDecendantDiagramClick() {
     $.ajax({
         headers: requestHeaders,
         type: "GET",
-        url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
+        // $orderby within a $expand doesn't work in WebApi OData 5.3.1
+        // url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
+        url: "/odata/GetPersonAndDescendants(Id=" + id + ",TotalLevels=10)?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
         success: function (returnedData) {
             viewModel.drawDiagramErrorMessage('初始化...');
             var diagramData = initDiagramData(returnedData);
@@ -1085,20 +1087,22 @@ function zTreeOnExpand(event, treeId, treeNode) {
         $.ajax({
             type: "GET",
             headers: requestHeaders,
-            url: "/odata/People(" + treeNode.Id + ")?$select=Id&$expand=ChildrenByFather($select=Id,FirstName,Gender,LastName;$orderby=BirthDay,BirthTime)",
+            url: "/odata/People(" + treeNode.Id + ")/ChildrenByFather?$select=FatherId,FirstName,Gender,Id,LastName&$orderby=BirthDay,BirthTime,OrderInChildrenOfParents",
             success: function (responseData) {
                 if (!responseData) return null;
-                var candidateNodes = zTreeObj.getNodesByParam("Id", responseData.Id, null)
-                if (candidateNodes == null) {
-                    alert("导航树中无此节点！");
-                } else {
-                    var fatherNode = candidateNodes[0];
-                    zTreeObj.expandNode(fatherNode, true, false, false);
-                    var childNode = null;
-                    for (var i = 0; i < responseData.ChildrenByFather.length; i++) {
-                        childNode = responseDataToTreeNode(responseData.ChildrenByFather[i]);
+                else {
+                    var childNode, fatherNode, tempNodes = null;
+                    for (var i = 0; i < responseData.value.length; i++) {
+                        tempNodes = zTreeObj.getNodesByParam("Id", responseData.value[i].FatherId, null)
+                        if (tempNodes == null) {
+                            alert("导航树中无编号为‘" + responseData.value[i].FatherId + "的节点！");
+                            continue;
+                        }
+                        fatherNode = tempNodes[0];
+                        childNode = responseDataToTreeNode(responseData.value[i]);
                         zTreeObj.addNodes(fatherNode, childNode);
                     }
+                    zTreeObj.expandNode(fatherNode, true, false, false);
                 }
             },
             failure: function (response) {
@@ -1156,20 +1160,12 @@ function loadRootNavigationNodes(headers) {
     $.ajax({
         type: "GET",
         headers: headers,
-        url: "/odata/People?$select=Id,FirstName,Gender,LastName,FatherId&$orderby=BirthDay,BirthTime&$filter=FatherId eq null",
+        url: "/odata/People?$select=Id,FirstName,Gender,LastName,FatherId&$orderby=LastName,FirstName&$filter=FatherId eq null",
         success: function (responseData) {
-            if (!responseData) return null;
-            var candidateNodes = zTreeObj.getNodesByParam("Id", responseData.Id, null)
-            if (candidateNodes == null) {
-                alert("导航树中无此节点！");
-            } else {
-                var fatherNode = candidateNodes[0];
-                zTreeObj.expandNode(fatherNode, true, false, false);
-                var childNode = null;
-                for (var i = 0; i < responseData.value.length; i++) {
-                    childNode = responseDataToTreeNode(responseData.value[i]);
-                    zTreeObj.addNodes(fatherNode, childNode);
-                }
+            var childNode = null;
+            for (var i = 0; i < responseData.value.length; i++) {
+                childNode = responseDataToTreeNode(responseData.value[i]);
+                zTreeObj.addNodes(null, childNode);
             }
         },
         failure: function (response) {

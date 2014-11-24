@@ -291,11 +291,44 @@ namespace Relationship.Controllers
             return SingleResult.Create(db.Person.Where(m => m.Id == key && m.CreatedBy == userId).Select(m => m.Mother));
         }
 
-        [ODataRoute("GetRootPersons()")]
-        public IHttpActionResult GetRootPersons()
+        [EnableQuery(MaxExpansionDepth = 9)]
+        [ODataRoute("GetPersonAndDescendants(Id={personId},TotalLevels={totalLevels})")]
+        public IHttpActionResult GetPersonAndDescendants(long personId, int totalLevels)
         {
-            IQueryable<Person> rootPersons = db.Person.Where(p => p.FatherId == null);
-            return Ok(rootPersons);
+            string userId = User.Identity.GetUserId();
+            Person rootPerson = db.Person.SingleOrDefault(m => m.Id == personId && m.CreatedBy == userId);
+            if (rootPerson == null)
+            {
+                return NotFound();
+            }
+            loadPersonAndDescdants(rootPerson, 1, totalLevels);
+            return Ok(rootPerson);
+        }
+
+        private void loadPersonAndDescdants(Person person, int currentLevel, int totalLevels)
+        {
+            if (currentLevel > totalLevels)
+            {
+                return;
+            }
+            if (person == null)
+            {
+                return;
+            }
+            if (person.Gender != 1)
+            {
+                return;
+            }
+            IList<Person> childrenByFather = db.Person.Where(p => p.FatherId == person.Id).ToList();
+            person.ChildrenByFather = childrenByFather
+                .OrderBy(p => p.BirthDay)
+                .OrderBy(p => p.BirthTime)
+                .OrderBy(p => p.OrderInChildrenOfParents)
+                .ToList();
+            foreach (Person child in childrenByFather.Where(p => p.Gender == 1))
+            {
+                loadPersonAndDescdants(child, currentLevel + 1, totalLevels);
+            }
         }
 
         protected override void Dispose(bool disposing)
