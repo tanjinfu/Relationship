@@ -300,15 +300,10 @@ function drawAncestorDiagramClick() {
     $("#dialog-diagram").dialog("open");
     viewModel.drawDiagramErrorMessage('加载数据...');
     var id = viewModel.viewPerson().id();
-    //var selectClause = "Id,LastName,FirstName,Gender";
-    var expandClause = "$expand=Father($select=Id,LastName,FirstName,Gender),Mother($select=Id,LastName,FirstName,Gender)";
-    for (var i = 1; i <= 3; i++) {
-        expandClause = "$expand=Father($select=Id,LastName,FirstName,Gender;" + expandClause + "),Mother($select=Id,LastName,FirstName,Gender;" + expandClause + ")";
-    }
     $.ajax({
         headers: requestHeaders,
         type: "GET",
-        url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&" + expandClause,
+        url: "/odata/GetPersonAndAncestors(Id=" + id + ",TotalLevels=10)?$select=Id,LastName,FirstName,Gender,FatherId,MotherId",
         success: function (returnedData) {
             viewModel.drawDiagramErrorMessage('初始化...');
             var diagramData = initAncestorDiagramData(returnedData);
@@ -444,7 +439,7 @@ function calculatePosition(diagramData) {
     var currentDiagramNode = null;
     var childDiagramNode = null;
     var previousSibling = null;
- 
+
     console.time("calculateXTimer");
     while (queue.length > 0) {
         currentDiagramNode = queue.shift();
@@ -572,20 +567,20 @@ function initDiagramData(serverData) {
 
 function initAncestorDiagramData(serverData) {
     var diagramData = new DiagramData();
-
-    var serverNodes = new Array();
-    serverNodes.push(serverData);
     var maxFullNameLength = 0;
 
-    while (serverNodes.length > 0) {
-        var currentServerNode = serverNodes.shift();
-        var currentDiagramNode = diagramData.idToNodeMap[currentServerNode.Id];
+    var currentServerNode = null;
+    var currentDiagramNode = null;
+    for (var i = 0; i < serverData.value.length; i++) {
+        currentServerNode = serverData.value[i];
 
-        var currentDiagramNode = new DiagramNode();
+        currentDiagramNode = new DiagramNode();
+        currentDiagramNode.fatherId = currentServerNode.FatherId;
         currentDiagramNode.fullName = currentServerNode.LastName + currentServerNode.FirstName;
         currentDiagramNode.gender = currentServerNode.Gender;
         currentDiagramNode.id = currentServerNode.Id;
         currentDiagramNode.level = 0; // level starts from 0.
+        currentDiagramNode.motherId = currentServerNode.MotherId;
         currentDiagramNode.x = 0;
         currentDiagramNode.y = 0;
 
@@ -593,23 +588,11 @@ function initAncestorDiagramData(serverData) {
             maxFullNameLength = currentDiagramNode.fullName.length;
         }
 
-        var fatherServerNode = currentServerNode.Father;
-        if (fatherServerNode) {
-            currentDiagramNode.fatherId = fatherServerNode.Id;
-            serverNodes.push(fatherServerNode);
-        }
-
-        var motherServerNode = currentServerNode.Mother;
-        if (motherServerNode) {
-            currentDiagramNode.motherId = motherServerNode.Id;
-            serverNodes.push(motherServerNode);
-        }
-
         diagramData.nodes.push(currentDiagramNode);
         diagramData.idToNodeMap[currentDiagramNode.id] = currentDiagramNode;
     }
 
-    var maxLevel = calculateLevelForAncestorDiagram(serverData.Id, diagramData.idToNodeMap);
+    var maxLevel = calculateLevelForAncestorDiagram(diagramData.nodes[0].id, diagramData.idToNodeMap);
     var nodeHeight = maxFullNameLength * charHeightInPixel + 1;// plus 1 because the node border has width.
     diagramData.nodeHeight = nodeHeight;
     diagramData.height = diagramTopMarginInPixel +
@@ -636,38 +619,49 @@ function calculateAncestorDiagramPosition(diagramData) {
 
 
     // Calculate x
-    var queue = new Array();
+    var stack = new Array();
     rootNode.x = diagramLeftMarginInPixel;
-    queue.push(rootNode);
+    stack.push(rootNode);
 
     var currentDiagramNode = null;
     var motherDiagramNode = null;
     var fatherDiagramNode = null;
     var expectedMotherX = 0;
+    var shouldPushMother = false, shouldPushFather = false;
     console.time("calculateXTimer");
     var visitedNodes = {};
-    while (queue.length > 0) {
-        currentDiagramNode = queue.shift();
+    while (stack.length > 0) {
+        currentDiagramNode = stack.pop();
         visitedNodes[currentDiagramNode.id] = true;
-        if (currentDiagramNode.fatherId == null) {
+
+        shouldPushFather = false;
+        shouldPushMother = false;
+
+        fatherDiagramNode = diagramData.idToNodeMap[currentDiagramNode.fatherId];
+        if (fatherDiagramNode == null) {
             expectedMotherX = currentDiagramNode.x + diagramNodeWidthInPixel + diagramNodeHorizentalDistanceInPixel;
         } else {
-            fatherDiagramNode = diagramData.idToNodeMap[currentDiagramNode.fatherId];
-            if (!visitedNodes[fatherDiagramNode.id] || visitedNodes[fatherDiagramNode] && fatherDiagramNode.level > currentDiagramNode.length + 1) {
+            if (!visitedNodes[fatherDiagramNode.id] || visitedNodes[fatherDiagramNode.id] && fatherDiagramNode.level > currentDiagramNode.level + 1) {
                 fatherDiagramNode.x = currentDiagramNode.x;
                 expectedMotherX = currentDiagramNode.x + fatherDiagramNode.treeWidth + diagramNodeHorizentalDistanceInPixel;
-                queue.push(fatherDiagramNode);
+                shouldPushFather = true;
             }
         }
 
-        if (currentDiagramNode.motherId != null) {
-            motherDiagramNode = diagramData.idToNodeMap[currentDiagramNode.motherId];
-            if (!visitedNodes[motherDiagramNode.id] || visitedNodes[motherDiagramNode] && motherDiagramNode.level > currentDiagramNode.length + 1) {
-
-                motherDiagramNode = diagramData.idToNodeMap[currentDiagramNode.motherId]
+        motherDiagramNode = diagramData.idToNodeMap[currentDiagramNode.motherId]
+        if (motherDiagramNode != null) {
+            if (!visitedNodes[motherDiagramNode.id] || visitedNodes[motherDiagramNode.id] && motherDiagramNode.level > currentDiagramNode.level + 1) {
                 motherDiagramNode.x = expectedMotherX;
-                queue.push(motherDiagramNode);
+                shouldPushMother = true;
             }
+        }
+
+        // The order of pushing mother and father should not be swapped, because father is calculated first.
+        if (shouldPushMother) {
+            stack.push(motherDiagramNode);
+        }
+        if (shouldPushFather) {
+            stack.push(fatherDiagramNode);
         }
     }
 
@@ -702,10 +696,9 @@ function drawAncestorDiagram(c, diagramData) {
             var expectedMotherX = currentNode.x + diagramNodeHorizentalDistanceInPixel + diagramNodeWidthInPixel;
 
             // father node
-            if (currentNode.fatherId != null) {
-                fatherNode = diagramData.idToNodeMap[currentNode.fatherId];
+            fatherNode = diagramData.idToNodeMap[currentNode.fatherId];
+            if (fatherNode != null) {
                 drawStraightLine(ctx, currentNode.x + diagramNodeWidthInPixel / 2, currentNode.y, fatherNode.x + diagramNodeWidthInPixel / 2, fatherNode.y + diagramData.nodeHeight);
-
                 expectedMotherX = fatherNode.x + fatherNode.treeWidth + diagramNodeHorizentalDistanceInPixel;
                 if (!visitedNodes[fatherNode.id]) {
                     nodes.push(fatherNode);
@@ -713,8 +706,8 @@ function drawAncestorDiagram(c, diagramData) {
             }
 
             // mother node
-            if (currentNode.motherId != null) {
-                motherNode = diagramData.idToNodeMap[currentNode.motherId];
+            motherNode = diagramData.idToNodeMap[currentNode.motherId];
+            if (motherNode != null) {
                 if (motherNode.x == expectedMotherX) {
                     drawPolyLine(ctx,
                         currentNode.x + diagramNodeWidthInPixel / 2,
@@ -742,8 +735,8 @@ function calculateTreeWidthForAncestorDiagram(map, rootDiagramNode, diagramNodeW
     var fatherTreeWidth = diagramNodeWidth;
 
     var fatherDiagramNode, motherDiagramNode;
-    if (rootDiagramNode.fatherId != null) {
-        fatherDiagramNode = map[rootDiagramNode.fatherId];
+    fatherDiagramNode = map[rootDiagramNode.fatherId];
+    if (fatherDiagramNode != null) {
         calculateTreeWidthForAncestorDiagram(
             map,
             fatherDiagramNode,
@@ -751,10 +744,11 @@ function calculateTreeWidthForAncestorDiagram(map, rootDiagramNode, diagramNodeW
             diagramNodeHorizontalDistance);
         fatherTreeWidth = fatherDiagramNode.treeWidth;
     }
-    if (rootDiagramNode.motherId == null) {
+
+    motherDiagramNode = map[rootDiagramNode.motherId];
+    if (motherDiagramNode == null) {
         rootDiagramNode.treeWidth = fatherTreeWidth;
     } else {
-        motherDiagramNode = map[rootDiagramNode.motherId];
         calculateTreeWidthForAncestorDiagram(
             map,
             motherDiagramNode,
@@ -767,25 +761,25 @@ function calculateTreeWidthForAncestorDiagram(map, rootDiagramNode, diagramNodeW
 
 function calculateLevelForAncestorDiagram(rootDiagramNodeId, map) {
     var maxLevel = 0, currentLevel;
-    var diagramNodes = new Array();
-    diagramNodes.push(map[rootDiagramNodeId]);
+    var queue = new Array();
+    queue.push(map[rootDiagramNodeId]);
     var currentNode = null;
     var fatherNode = null;
     var motherNode = null;
 
-    while (diagramNodes.length > 0) {
-        currentNode = diagramNodes.shift();
+    while (queue.length > 0) {
+        currentNode = queue.shift();
         currentLevel = currentNode.level;
 
-        if (currentNode.fatherId) {
-            fatherNode = map[currentNode.fatherId];
+        fatherNode = map[currentNode.fatherId];
+        if (fatherNode != null) {
             fatherNode.level = Math.max(currentLevel + 1, fatherNode.level);
-            diagramNodes.push(fatherNode);
+            queue.push(fatherNode);
         }
-        if (currentNode.motherId) {
-            motherNode = map[currentNode.motherId];
+        motherNode = map[currentNode.motherId];
+        if (motherNode != null) {
             motherNode.level = Math.max(currentLevel + 1, motherNode.level);
-            diagramNodes.push(motherNode);
+            queue.push(motherNode);
         }
         maxLevel = Math.max(currentLevel, maxLevel);
     }

@@ -305,6 +305,53 @@ namespace Relationship.Controllers
             return Ok(rootPerson);
         }
 
+        [EnableQuery]
+        [ODataRoute("GetPersonAndAncestors(Id={personId},TotalLevels={totalLevels})")]
+        public IHttpActionResult GetPersonAndAncestors(long personId, int totalLevels)
+        {
+            string userId = User.Identity.GetUserId();
+            Person rootPerson = db.Person.SingleOrDefault(m => m.Id == personId && m.CreatedBy == userId);
+            if (rootPerson == null)
+            {
+                return NotFound();
+            }
+
+            IList<Person> personAndAncestors = new List<Person>();
+
+            loadFatherAndMother(rootPerson, 1, totalLevels, personAndAncestors);
+
+            return Ok(personAndAncestors);
+        }
+
+        private void loadFatherAndMother(Person person, int currentLevel, int totalLevels, IList<Person> persons)
+        {
+            if (currentLevel > totalLevels)
+            {
+                return;
+            }
+            if (person == null)
+            {
+                return;
+            }
+            persons.Add(person);
+            if (person.FatherId != null)
+            {
+                Person father = db.Person.SingleOrDefault(p => p.Id == person.FatherId);
+                if (father != null)
+                {
+                    loadFatherAndMother(father, currentLevel + 1, totalLevels, persons);
+                }
+            }
+            if (person.MotherId != null)
+            {
+                Person mother = db.Person.SingleOrDefault(p => p.Id == person.MotherId);
+                if (mother != null)
+                {
+                    loadFatherAndMother(mother, currentLevel + 1, totalLevels, persons);
+                }
+            }
+        }
+
         private void loadPersonAndDescdants(Person person, int currentLevel, int totalLevels)
         {
             if (currentLevel > totalLevels)
