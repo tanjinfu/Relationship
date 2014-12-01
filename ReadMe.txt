@@ -37,3 +37,9 @@ http://api.jqueryui.com/dialog/
 如何删除子模组
 使用 git 命令即可删除子模组
 git rm --cached path/to/submodule
+
+After github for windows is installed, the git.exe is located here: C:\Users\<username>\AppData\Local\GitHub\PortableGit_<numbersandletters>\bin\git.exe
+
+1. download maven http://mirrors.cnnic.cn/apache/maven/maven-3/3.2.3/binaries/apache-maven-3.2.3-bin.zip and unzip to d:\greenPrograms\
+2. create a web project in IntelliJ http://developer.51cto.com/art/201405/439918.htm
+3. Maven3 + Hibernate3.6 + MySQL5简单示例  http://blog.csdn.net/cai5/article/details/7291242
