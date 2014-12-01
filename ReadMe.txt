@@ -38,6 +38,13 @@ http://api.jqueryui.com/dialog/
 使用 git 命令即可删除子模组
 git rm --cached path/to/submodule
 
+git push origin newfeature
+Where origin is your remote name and newfeature is the name of the branch you want to push up. 
+
+Deleting is also a pretty simple task (despite it feeling a bit kludgy):
+git push origin :newfeature
+That will delete the newfeature branch on the origin remote, but you’ll still need to delete the branch locally with git branch -d newfeature.
+
 After github for windows is installed, the git.exe is located here: C:\Users\<username>\AppData\Local\GitHub\PortableGit_<numbersandletters>\bin\git.exe
 
 1. download maven http://mirrors.cnnic.cn/apache/maven/maven-3/3.2.3/binaries/apache-maven-3.2.3-bin.zip and unzip to d:\greenPrograms\
