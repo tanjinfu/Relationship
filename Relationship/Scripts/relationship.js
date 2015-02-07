@@ -254,9 +254,9 @@ function drawDecendantDiagramClick() {
     $.ajax({
         headers: requestHeaders,
         type: "GET",
-        // $orderby within a $expand doesn't work in WebApi OData 5.3.1
+        // $orderby within a $expand doesn't work in WebApi OData 5.3.1, so use the second url.
         // url: "/odata/People(" + id + ")?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
-        url: "/odata/GetPersonAndDescendants(Id=" + id + ",TotalLevels=10)?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=9)",
+        url: "/odata/GetPersonAndDescendants(Id=" + id + ",TotalLevels=15)?$select=Id,LastName,FirstName,Gender&$expand=ChildrenByFather($select=Id,LastName,FirstName,Gender;$levels=14)",
         success: function (returnedData) {
             viewModel.drawDiagramErrorMessage('初始化...');
             var diagramData = initDiagramData(returnedData);

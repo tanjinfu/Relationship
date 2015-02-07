@@ -37,3 +37,7 @@ http://api.jqueryui.com/dialog/
 如何删除子模组
 使用 git 命令即可删除子模组
 git rm --cached path/to/submodule
+
+2015-02-07 
+
+Error	10	The command ""D:\git\github\tanjinfu\Relationship\.nuget\NuGet.exe" install "D:\git\github\tanjinfu\Relationship\Relationship\packages.config" -source ""  -NonInteractive -RequireConsent -solutionDir "D:\git\github\tanjinfu\Relationship\ "" exited with code 9020.	Relationship

@@ -291,7 +291,7 @@ namespace Relationship.Controllers
             return SingleResult.Create(db.Person.Where(m => m.Id == key && m.CreatedBy == userId).Select(m => m.Mother));
         }
 
-        [EnableQuery(MaxExpansionDepth = 9)]
+        [EnableQuery(MaxExpansionDepth = 14)]
         [ODataRoute("GetPersonAndDescendants(Id={personId},TotalLevels={totalLevels})")]
         public IHttpActionResult GetPersonAndDescendants(long personId, int totalLevels)
         {
