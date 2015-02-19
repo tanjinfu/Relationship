@@ -828,7 +828,9 @@ function ClientPerson(serverPerson) {
         self.deathDay(serverPerson.DeathDay);
         self.deathTime(serverPerson.DeathTime);
         if (serverPerson.Father != null) {
-            self.fatherFirstName(serverPerson.Father.FirstName);
+            var fatherFirstNamePlusId = '-' + serverPerson.FatherId;
+            fatherFirstNamePlusId = serverPerson.Father.FirstName + fatherFirstNamePlusId;
+            self.fatherFirstName(fatherFirstNamePlusId);
             self.fatherLastName(serverPerson.Father.LastName);
         }
         self.fatherId(serverPerson.FatherId);
@@ -837,7 +839,9 @@ function ClientPerson(serverPerson) {
         self.id(serverPerson.Id);
         self.lastName(serverPerson.LastName);
         if (serverPerson.Mother != null) {
-            self.motherFirstName(serverPerson.Mother.FirstName);
+            var motherFirstNamePlusId = '-' + serverPerson.MotherId;
+            motherFirstNamePlusId = serverPerson.Mother.FirstName + motherFirstNamePlusId;
+            self.motherFirstName(motherFirstNamePlusId);
             self.motherLastName(serverPerson.Mother.LastName);
         }
         self.motherId(serverPerson.MotherId);

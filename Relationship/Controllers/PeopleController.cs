@@ -370,7 +370,7 @@ namespace Relationship.Controllers
                 .Where(p => p.FatherId == person.Id)
                 .ToList();
             person.ChildrenByFather = childrenByFather
-                .Where(p=>p.Gender == 1) // only males.
+                //.Where(p=>p.Gender == 1) // only males.
                 .OrderBy(p => p.BirthDay)
                 .ThenBy(p => p.BirthTime)
                 .ThenBy(p => p.OrderInChildrenOfParents)
