@@ -870,10 +870,10 @@ function SignInfo() {
     self.result = ko.observable('');
     self.userName = ko.observable('');
 
-    self.registerUserName = ko.observable("cao.xueqin");
-    self.registerEmail = ko.observable("cao.xueqin@gmail.com");
-    self.registerPassword = ko.observable("Password01!");
-    self.confirmPassword = ko.observable("Password01!");
+    self.registerUserName = ko.observable("");
+    self.registerEmail = ko.observable("");
+    self.registerPassword = ko.observable("");
+    self.confirmPassword = ko.observable("");
 
     self.loginUserName = ko.observable("cao.xueqin");
     self.loginPassword = ko.observable("Password01!");
@@ -922,6 +922,8 @@ function SignInfo() {
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify(data)
         }).done(function (data) {
+            self.loginUserName(self.registerUserName());
+            self.loginPassword(self.registerPassword());
             self.result("注册成功，请登录。");
         }).fail(function (response) {
             $("#registerButton").attr("disabled", false); 
