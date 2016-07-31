@@ -915,7 +915,8 @@ function SignInfo() {
             ConfirmPassword: self.confirmPassword(),
             UserName: self.registerUserName(),
         };
-        $("#registerButton").attr("disabled", true); 
+        $("#registerButton").attr("disabled", true);
+        $("#registerStatusDiv").html("<img src='Images/loading.gif' />");
         $.ajax({
             type: 'POST',
             url: '/api/Account/Register',
@@ -925,8 +926,10 @@ function SignInfo() {
             self.loginUserName(self.registerUserName());
             self.loginPassword(self.registerPassword());
             self.result("注册成功，请登录。");
+            $("#registerStatusDiv").html("");
         }).fail(function (response) {
             $("#registerButton").attr("disabled", false); 
+            $("#registerStatusDiv").html("");
             showError(response);
         });
        
@@ -941,6 +944,7 @@ function SignInfo() {
             password: self.loginPassword()
         };
         $("#loginIdButton").attr("disabled", true);
+        $("#loginStatusDiv").html("<img src='Images/loading.gif' />");
         $.ajax({
             type: 'POST',
             url: '/Token',
@@ -957,8 +961,10 @@ function SignInfo() {
             if (rootNavigationNodes.length == 0) {
                 loadRootNavigationNodes(header);
             }
+            $("#loginStatusDiv").html("");
         }).fail(function (response) {
             $("#loginIdButton").attr("disabled", false); 
+            $("#loginStatusDiv").html("");
             // {"error":"invalid_grant","error_description":"The user name or password is incorrect."}
             var description = $.parseJSON(response.responseText)['error_description'];
             self.result(description);
