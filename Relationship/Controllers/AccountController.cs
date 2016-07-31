@@ -16,13 +16,19 @@ using Microsoft.Owin.Security.OAuth;
 using LocalAccountsApp.Models;
 using LocalAccountsApp.Providers;
 using LocalAccountsApp.Results;
+using log4net;
+using System.Reflection;
 
 namespace LocalAccountsApp.Controllers
 {
     [Authorize]
     [RoutePrefix("api/Account")]
+  
     public class AccountController : ApiController
     {
+        //private static readonly ILog log = LogManager.GetLogger("MyLogger");
+        //private static ILog log = LogManager.GetLogger(typeof(AccountController));
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
@@ -329,9 +335,19 @@ namespace LocalAccountsApp.Controllers
             }
 
             var user = new ApplicationUser() { UserName = model.UserName, Email = model.Email };
-
-            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-
+            log.Info("user:" + user.ToString());
+            IdentityResult result = null;
+            try
+            {
+                result = await UserManager.CreateAsync(user, model.Password);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Failed.", ex);
+                log.Error(ex.Message);
+                log.Error(ex.StackTrace);
+                throw ex;
+            }
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);

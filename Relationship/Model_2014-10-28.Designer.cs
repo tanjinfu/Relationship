@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'D:\github\tanjinfu\Relationship\Relationship\Model_2014-10-28.edmx'. 
+﻿// T4 code generation is enabled for model 'D:\git\github\tanjinfu\Relationship\Relationship\Model_2014-10-28.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.
